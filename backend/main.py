@@ -1,16 +1,23 @@
-# This is a sample Python script.
+import os
+from flask import Flask, jsonify
+from flask_cors import CORS
+from flask_jwt_extended import JWTManager
+from resources.auth import auth
 
-# Press ⌃R to execute it or replace it with your code.
-# Press Double ⇧ to search everywhere for classes, files, tool windows, actions, and settings.
+app = Flask(__name__)
+CORS(app)
+app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY')
+jwt = JWTManager(app)
 
+@jwt.expired_token_loader
+@jwt.invalid_token_loader
+@jwt.unauthorized_loader
+@jwt.needs_fresh_token_loader
+@jwt.revoked_token_loader
+def jwt_error(*args):
+    return jsonify(msg="Access Denied"), 401
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press ⌘F8 to toggle the breakpoint.
+app.register_blueprint(auth)
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    app.run(port=5001, debug=os.getenv('DEBUG', False))

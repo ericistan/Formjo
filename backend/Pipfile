@@ -4,6 +4,14 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
+  flask = "*"
+  psycopg2-binary = "*"
+  flask-cors = "*"
+  python-dotenv = "*"
+  marshmallow = "*"
+  bcrypt = "*"
+  flask-jwt-extended = "*"
+  gunicorn = "*"
 
 [dev-packages]
 
