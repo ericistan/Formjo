@@ -104,13 +104,27 @@ def update_lesson(id):
                difficulty_id=%s,
                media_type=%s,
                media_url=%s
-           WHERE id=%s RETURNING *''',
+           WHERE id=%s''',
         (data['title'], data.get('description'), category['id'], difficulty['id'],
          data.get('media_type'), data.get('media_url'), id)
     )
 
-    updated = cursor.fetchone()
     conn.commit()
+
+    cursor.execute(
+        '''SELECT lesson.id, lesson.title, lesson.description, lesson.media_type, lesson.media_url, lesson.created_at,
+                  users.name AS created_by,
+                  categories.name AS category,
+                  difficulty_levels.name AS difficulty
+           FROM lesson
+           JOIN users ON lesson.created_by = users.id
+           JOIN categories ON lesson.category_id = categories.id
+           JOIN difficulty_levels ON lesson.difficulty_id = difficulty_levels.id
+           WHERE lesson.id = %s''',
+        (id,)
+    )
+
+    updated = cursor.fetchone()
     release_connection(conn)
     return jsonify(updated), 200
 

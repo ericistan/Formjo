@@ -1,0 +1,144 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  /* ShadCN variable bridges */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Radius scale */
+  --radius-sm: calc(var(--radius) * 0.5);
+  --radius-md: calc(var(--radius) * 0.667);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.333);
+  --radius-pill: 9999px;
+
+  /* Formjo brand colors */
+  --color-washi: oklch(0.944 0.013 80);
+  --color-parchment: oklch(0.897 0.016 75);
+  --color-paper: oklch(0.99 0.006 85);
+  --color-dark-base: oklch(0.182 0.011 55);
+  --color-dark-surface: oklch(0.224 0.013 55);
+  --color-amber: oklch(0.62 0.17 50);
+  --color-amber-tint: oklch(0.968 0.028 85);
+  --color-amber-dark: oklch(0.512 0.148 48);
+  --color-ink: oklch(0.145 0 0);
+  --color-stone: oklch(0.548 0.038 65);
+  --color-chalk: oklch(0.944 0.013 80);
+  --color-bamboo: oklch(0.495 0.082 145);
+  --color-bamboo-tint: oklch(0.956 0.038 140);
+  --color-danger: oklch(0.494 0.188 27);
+  --color-danger-tint: oklch(0.963 0.018 20);
+
+  /* Formjo fonts */
+  --font-sans: "DM Sans", sans-serif;
+  --font-display: "Bebas Neue", sans-serif;
+  --font-body: "DM Sans", sans-serif;
+}
+
+:root {
+  /* Formjo light mode — Student */
+  --background: oklch(0.944 0.013 80); /* Washi */
+  --foreground: oklch(0.145 0 0); /* Ink Black */
+  --card: oklch(0.99 0.006 85); /* Paper White */
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(0.99 0.006 85);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.62 0.17 50); /* Amber Fire */
+  --primary-foreground: oklch(0.944 0.013 80); /* Chalk */
+  --secondary: oklch(0.897 0.016 75); /* Parchment */
+  --secondary-foreground: oklch(0.145 0 0);
+  --muted: oklch(0.897 0.016 75); /* Parchment */
+  --muted-foreground: oklch(0.548 0.038 65); /* Stone */
+  --accent: oklch(0.968 0.028 85); /* Amber Tint */
+  --accent-foreground: oklch(0.512 0.148 48); /* Amber Dark */
+  --destructive: oklch(0.494 0.188 27); /* Alert Red */
+  --destructive-foreground: oklch(0.944 0.013 80);
+  --border: oklch(0.897 0.016 75); /* Parchment */
+  --input: oklch(0.897 0.016 75);
+  --ring: oklch(0.62 0.17 50); /* Amber Fire */
+  --radius: 0.75rem;
+  --sidebar: oklch(0.99 0.006 85);
+  --sidebar-foreground: oklch(0.145 0 0);
+  --sidebar-primary: oklch(0.62 0.17 50);
+  --sidebar-primary-foreground: oklch(0.944 0.013 80);
+  --sidebar-accent: oklch(0.968 0.028 85);
+  --sidebar-accent-foreground: oklch(0.512 0.148 48);
+  --sidebar-border: oklch(0.897 0.016 75);
+  --sidebar-ring: oklch(0.62 0.17 50);
+}
+
+.dark {
+  /* Formjo dark mode — Coach */
+  --background: oklch(0.182 0.011 55); /* Dark Base */
+  --foreground: oklch(0.944 0.013 80); /* Chalk */
+  --card: oklch(0.224 0.013 55); /* Dark Surface */
+  --card-foreground: oklch(0.944 0.013 80);
+  --popover: oklch(0.224 0.013 55);
+  --popover-foreground: oklch(0.944 0.013 80);
+  --primary: oklch(0.62 0.17 50); /* Amber Fire — same in both modes */
+  --primary-foreground: oklch(0.944 0.013 80);
+  --secondary: oklch(0.26 0.013 55);
+  --secondary-foreground: oklch(0.944 0.013 80);
+  --muted: oklch(0.26 0.013 55);
+  --muted-foreground: oklch(0.48 0.025 60);
+  --accent: oklch(0.25 0.03 55);
+  --accent-foreground: oklch(0.72 0.14 55);
+  --destructive: oklch(0.494 0.188 27); /* Alert Red */
+  --destructive-foreground: oklch(0.944 0.013 80);
+  --border: oklch(0.26 0.013 55);
+  --input: oklch(0.26 0.013 55);
+  --ring: oklch(0.62 0.17 50); /* Amber Fire */
+  --sidebar: oklch(0.224 0.013 55);
+  --sidebar-foreground: oklch(0.944 0.013 80);
+  --sidebar-primary: oklch(0.62 0.17 50);
+  --sidebar-primary-foreground: oklch(0.944 0.013 80);
+  --sidebar-accent: oklch(0.26 0.013 55);
+  --sidebar-accent-foreground: oklch(0.944 0.013 80);
+  --sidebar-border: oklch(0.26 0.013 55);
+  --sidebar-ring: oklch(0.62 0.17 50);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display;
+  }
+}
