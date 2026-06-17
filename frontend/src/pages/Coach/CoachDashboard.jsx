@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const CoachDashboard = () => {
   return (
-    <div>
+    <div className="pt-16">
       <h1>Coach Dashboard</h1>
       <Link to="/coach/lessons">View my lessons</Link>
     </div>

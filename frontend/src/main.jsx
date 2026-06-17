@@ -5,6 +5,8 @@ import { ErrorBoundary } from "react-error-boundary";
 import { AuthProvider } from "./context/AuthContext";
 import "./index.css";
 import App from "./App.jsx";
+import Navbar from "./components/Navbar.jsx";
+import Layout from "./components/Layout.jsx";
 
 function ErrorFallback({ error }) {
   return (
@@ -20,7 +22,10 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <ErrorBoundary FallbackComponent={ErrorFallback}>
         <AuthProvider>
-          <App />
+          <Navbar />
+          <Layout>
+            <App />
+          </Layout>
         </AuthProvider>
       </ErrorBoundary>
     </BrowserRouter>

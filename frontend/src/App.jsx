@@ -6,6 +6,8 @@ import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import CoachDashboard from "./pages/Coach/CoachDashboard.jsx";
 import StudentDashboard from "./pages/Student/StudentDashboard.jsx";
 import LessonList from "./pages/Coach/LessonList.jsx";
+import LessonCreate from "./pages/Coach/LessonCreate.jsx";
+import LessonDetail from "./pages/Coach/LessonDetail.jsx";
 
 function App() {
   return (
@@ -35,6 +37,22 @@ function App() {
           element={
             <ProtectedRoute>
               <LessonList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/lessons/create"
+          element={
+            <ProtectedRoute>
+              <LessonCreate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/lessons/:id"
+          element={
+            <ProtectedRoute>
+              <LessonDetail />
             </ProtectedRoute>
           }
         />

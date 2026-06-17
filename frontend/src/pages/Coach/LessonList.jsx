@@ -15,6 +15,7 @@ const LessonList = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+      if (!response.ok) return;
       const data = await response.json();
       setLessons(data);
     }
@@ -37,16 +38,18 @@ const LessonList = () => {
       ) : (
         <div className="flex flex-col gap-4">
           {lessons.map((lesson) => (
-            <Card key={lesson.id}>
-              <CardHeader>
-                <CardTitle>{lesson.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground">
-                  {lesson.category} · {lesson.difficulty}
-                </p>
-              </CardContent>
-            </Card>
+            <Link key={lesson.id} to={`/coach/lessons/${lesson.id}`}>
+              <Card className="hover:border-foreground transition-colors cursor-pointer">
+                <CardHeader>
+                  <CardTitle>{lesson.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    {lesson.category} · {lesson.difficulty}
+                  </p>
+                </CardContent>
+              </Card>
+            </Link>
           ))}
         </div>
       )}

@@ -29,6 +29,17 @@ def create_lesson():
     )
 
     new_id = cursor.fetchone()['id']
+
+    # Insert steps if provided, skipping any blanks
+    steps = data.get('steps', [])
+    for i, step in enumerate(steps):
+        instruction = step.get('instruction', '').strip()
+        if instruction:
+            cursor.execute(
+                'INSERT INTO lesson_steps (lesson_id, order_index, instruction) VALUES (%s, %s, %s)',
+                (new_id, i + 1, instruction)
+            )
+
     conn.commit()
 
     cursor.execute(
@@ -47,6 +58,40 @@ def create_lesson():
     new_lesson = cursor.fetchone()
     release_connection(conn)
     return jsonify(new_lesson), 201
+
+@lesson.route('/lesson/<int:id>', methods=['GET'])
+@jwt_required()
+def get_lesson_by_id(id):
+    coach_id = get_jwt_identity()
+    conn, cursor = get_cursor()
+
+    cursor.execute(
+        '''SELECT lesson.id, lesson.title, lesson.description, lesson.media_type, lesson.media_url, lesson.created_at,
+                  users.name AS created_by,
+                  categories.name AS category,
+                  difficulty_levels.name AS difficulty
+           FROM lesson
+           JOIN users ON lesson.created_by = users.id
+           JOIN categories ON lesson.category_id = categories.id
+           JOIN difficulty_levels ON lesson.difficulty_id = difficulty_levels.id
+           WHERE lesson.id = %s AND lesson.created_by = %s''',
+        (id, coach_id)
+    )
+    lesson_data = cursor.fetchone()
+
+    if not lesson_data:
+        release_connection(conn)
+        return jsonify(status='error', msg='lesson not found or unauthorized'), 404
+
+    # Fetch steps ordered by their position
+    cursor.execute(
+        'SELECT id, order_index, instruction FROM lesson_steps WHERE lesson_id = %s ORDER BY order_index',
+        (id,)
+    )
+    steps = cursor.fetchall()
+
+    release_connection(conn)
+    return jsonify({ **lesson_data, 'steps': steps }), 200
 
 @lesson.route('/lesson', methods=['GET'])
 @jwt_required()
