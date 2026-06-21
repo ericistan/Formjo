@@ -19,11 +19,22 @@ const Navbar = () => {
           </Link>
 
           {user && user.role === "coach" && (
-            <Link
-              to="/coach/lessons"
-              className="text-sm text-muted-foreground hover:text-foreground"
-            >
-              Lessons
+            <>
+              <Link to="/coach/lessons" className="text-sm text-muted-foreground hover:text-foreground">
+                Lessons
+              </Link>
+              <Link to="/coach/modules" className="text-sm text-muted-foreground hover:text-foreground">
+                Modules
+              </Link>
+              <Link to="/coach/assignments" className="text-sm text-muted-foreground hover:text-foreground">
+                Assignments
+              </Link>
+            </>
+          )}
+
+          {user && user.role === "student" && (
+            <Link to="/student/assignments" className="text-sm text-muted-foreground hover:text-foreground">
+              Assignments
             </Link>
           )}
         </div>
@@ -36,7 +47,9 @@ const Navbar = () => {
           ) : (
             <>
               <Link to="/signin">
-                <Button variant="ghost" size="sm">Sign in</Button>
+                <Button variant="ghost" size="sm">
+                  Sign in
+                </Button>
               </Link>
               <Link to="/signup">
                 <Button size="sm">Sign up</Button>

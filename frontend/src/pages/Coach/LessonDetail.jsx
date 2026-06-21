@@ -2,6 +2,17 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogAction,
+  AlertDialogCancel,
+} from "@/components/ui/alert-dialog";
 
 function extractYouTubeId(url) {
   const match = url.match(
@@ -38,6 +49,23 @@ const LessonDetail = () => {
     );
   }
 
+  async function handleDelete() {
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/lesson/${id}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      },
+    );
+    if (response.ok) {
+      navigate("/coach/lessons");
+    } else {
+      console.error("Failed to delete lesson");
+    }
+  }
+
   return (
     <div className="py-8 max-w-lg mx-auto flex flex-col gap-6">
       {/* Coach action bar */}
@@ -48,8 +76,26 @@ const LessonDetail = () => {
         >
           Edit
         </Button>
-        {/* Delete button will go here — we'll wire AlertDialog after */}
-        <Button variant="destructive">Delete</Button>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button variant="destructive">Delete</Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Delete this lesson?</AlertDialogTitle>
+              <AlertDialogDescription>
+                This can't be undone. The lesson and all its steps will be
+                permanently removed.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete}>
+                Delete
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
       </div>
 
       {/* Lesson content — student view */}

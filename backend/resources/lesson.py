@@ -25,7 +25,7 @@ def create_lesson():
         '''INSERT INTO lesson (created_by, category_id, difficulty_id, title, description, media_type, media_url)
            VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id''',
         (coach_id, category['id'], difficulty['id'], data['title'],
-         data.get('description'), data.get('media_type'), data.get('media_url'))
+         data.get('description') or None, data.get('media_type') or None, data.get('media_url') or None)
     )
 
     new_id = cursor.fetchone()['id']
@@ -62,7 +62,6 @@ def create_lesson():
 @lesson.route('/lesson/<int:id>', methods=['GET'])
 @jwt_required()
 def get_lesson_by_id(id):
-    coach_id = get_jwt_identity()
     conn, cursor = get_cursor()
 
     cursor.execute(
@@ -74,14 +73,14 @@ def get_lesson_by_id(id):
            JOIN users ON lesson.created_by = users.id
            JOIN categories ON lesson.category_id = categories.id
            JOIN difficulty_levels ON lesson.difficulty_id = difficulty_levels.id
-           WHERE lesson.id = %s AND lesson.created_by = %s''',
-        (id, coach_id)
+           WHERE lesson.id = %s''',
+        (id,)
     )
     lesson_data = cursor.fetchone()
 
     if not lesson_data:
         release_connection(conn)
-        return jsonify(status='error', msg='lesson not found or unauthorized'), 404
+        return jsonify(status='error', msg='lesson not found'), 404
 
     # Fetch steps ordered by their position
     cursor.execute(
@@ -150,10 +149,23 @@ def update_lesson(id):
                media_type=%s,
                media_url=%s
            WHERE id=%s''',
-        (data['title'], data.get('description'), category['id'], difficulty['id'],
-         data.get('media_type'), data.get('media_url'), id)
+        (data['title'], data.get('description') or None, category['id'], difficulty['id'],
+         data.get('media_type') or None, data.get('media_url') or None, id)
     )
 
+    conn.commit()
+
+    cursor.execute('DELETE FROM lesson_steps WHERE lesson_id = %s', (id,))
+
+    steps = data.get('steps', [])
+    for i, step in enumerate(steps):
+        instruction = step.get('instruction', '').strip()
+        if instruction:
+            cursor.execute(
+                'INSERT INTO lesson_steps (lesson_id, order_index, instruction) VALUES (%s, %s, %s)',
+                (id, i + 1, instruction)
+            )
+# deletes lesson steps so that any new/changedupdates will be rendered to the frontend
     conn.commit()
 
     cursor.execute(
