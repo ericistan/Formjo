@@ -73,7 +73,7 @@ const ModuleCreate = () => {
       "border-input bg-background text-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
     return (
-      <div className="py-8 max-w-lg mx-auto">
+      <div className="py-8 max-w-3xl mx-auto px-4">
         <Card>
           <CardHeader>
             <CardTitle>Create a module</CardTitle>

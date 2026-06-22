@@ -56,8 +56,8 @@ function SignupPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <Card className="w-full max-w-sm">
+    <div className="min-h-screen bg-background px-4 py-16 flex flex-col sm:items-center sm:justify-center">
+      <Card className="w-full sm:max-w-sm">
         <CardHeader>
           <CardTitle>Create your account</CardTitle>
           <CardDescription>Join Formjo as a coach or student</CardDescription>

@@ -14,6 +14,16 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
+const GRADIENTS = [
+  "from-slate-700 to-slate-900",
+  "from-amber-700 to-orange-900",
+  "from-indigo-700 to-violet-900",
+  "from-teal-700 to-emerald-900",
+  "from-rose-700 to-red-900",
+  "from-stone-600 to-zinc-800",
+];
+const coverGradient = (id) => GRADIENTS[id % GRADIENTS.length];
+
 const AssignmentDetail = () => {
   const { id } = useParams();
   const { token } = useAuth();
@@ -44,11 +54,17 @@ const AssignmentDetail = () => {
     return <p className="p-6 text-muted-foreground">Loading assignment...</p>;
 
   return (
-    <div className="py-8 max-w-lg mx-auto flex flex-col gap-6">
-      <div className="flex justify-end">
+    <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
+      <div className="flex items-center justify-between">
+        <button
+          onClick={() => navigate("/coach/assignments")}
+          className="text-sm text-muted-foreground hover:text-foreground"
+        >
+          ← Back to students
+        </button>
         <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="destructive">Delete</Button>
+            <Button variant="destructive" size="sm">Delete assignment</Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -63,27 +79,27 @@ const AssignmentDetail = () => {
         </AlertDialog>
       </div>
 
-      <div className="flex flex-col gap-2">
-        <div className="flex items-center gap-3">
-          <h1 className="font-display text-4xl">{assignment.module_title}</h1>
+      {/* Hero */}
+      <div className={`bg-gradient-to-br ${coverGradient(assignment.id)} rounded-xl p-8 flex flex-col gap-3`}>
+        <p className="text-xs font-medium uppercase tracking-widest text-white/50">Assignment</p>
+        <h1 className="font-display text-5xl text-white">{assignment.module_title}</h1>
+        <div className="flex items-center gap-3 flex-wrap mt-1">
+          <span className="text-sm text-white/70">{assignment.student_name}</span>
+          {assignment.due_date && (
+            <span className="text-xs text-white/50">
+              · Due {new Date(assignment.due_date).toLocaleDateString()}
+            </span>
+          )}
           <span
-            className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${
+            className={`ml-auto text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${
               assignment.status === "completed"
-                ? "bg-green-500/20 text-green-600"
-                : "bg-yellow-500/20 text-yellow-600"
+                ? "bg-green-500/30 text-green-200"
+                : "bg-yellow-500/20 text-yellow-200"
             }`}
           >
-            {assignment.status === "completed" ? "Completed" : "In Progress"}
+            {assignment.status === "completed" ? "✓ Completed" : "◷ In Progress"}
           </span>
         </div>
-        <p className="text-muted-foreground">
-          {assignment.student_name} ({assignment.student_email})
-        </p>
-        {assignment.due_date && (
-          <p className="text-sm text-muted-foreground">
-            Due {new Date(assignment.due_date).toLocaleDateString()}
-          </p>
-        )}
       </div>
 
       <div className="flex flex-col gap-3">

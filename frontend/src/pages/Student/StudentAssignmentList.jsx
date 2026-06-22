@@ -21,7 +21,7 @@ const StudentAssignmentList = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="py-8 max-w-3xl mx-auto px-4">
       <h1 className="text-3xl mb-6">My Assignments</h1>
 
       {assignments.length === 0 ? (

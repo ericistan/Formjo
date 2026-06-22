@@ -89,7 +89,7 @@ const LessonCreate = () => {
       : null;
 
   return (
-    <div className="py-8 max-w-lg mx-auto">
+    <div className="py-8 max-w-3xl mx-auto px-4">
       <Card>
         <CardHeader>
           <CardTitle>Create a lesson</CardTitle>

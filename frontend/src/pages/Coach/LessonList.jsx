@@ -23,7 +23,7 @@ const LessonList = () => {
   }, []);
 
   return (
-    <div className="p-6 max-w-2xl mx-auto">
+    <div className="py-8 max-w-3xl mx-auto px-4">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl">My Lessons</h1>
         <Link to="/coach/lessons/create">

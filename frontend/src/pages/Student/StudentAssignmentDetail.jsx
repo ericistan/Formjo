@@ -29,7 +29,7 @@ const StudentAssignmentDetail = () => {
     assignment.lessons.every((l) => l.is_complete);
 
   return (
-    <div className="py-8 max-w-lg mx-auto flex flex-col gap-6">
+    <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
           <h1 className="font-display text-4xl">{assignment.module_title}</h1>

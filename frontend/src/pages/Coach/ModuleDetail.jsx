@@ -17,6 +17,16 @@ import {
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
 
+const GRADIENTS = [
+  "from-slate-700 to-slate-900",
+  "from-amber-700 to-orange-900",
+  "from-indigo-700 to-violet-900",
+  "from-teal-700 to-emerald-900",
+  "from-rose-700 to-red-900",
+  "from-stone-600 to-zinc-800",
+];
+const coverGradient = (id) => GRADIENTS[id % GRADIENTS.length];
+
 const ModuleDetail = () => {
   const { id } = useParams();
   const { token } = useAuth();
@@ -90,7 +100,13 @@ const ModuleDetail = () => {
     return <p className="p-6 text-muted-foreground">Loading module...</p>;
 
   return (
-    <div className="py-8 max-w-lg mx-auto flex flex-col gap-6">
+    <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
+      <button
+        onClick={() => navigate("/coach/modules")}
+        className="text-sm text-muted-foreground hover:text-foreground self-start"
+      >
+        ← Back to modules
+      </button>
       <div className="flex justify-end gap-2">
         <Button onClick={() => { setShowAssignForm(!showAssignForm); setAssignSuccess(false); }}>
           Assign to student
@@ -166,10 +182,10 @@ const ModuleDetail = () => {
         </form>
       )}
 
-      <div className="flex flex-col gap-2">
-        <h1 className="font-display text-4xl">{mod.title}</h1>
+      <div className={`bg-gradient-to-br ${coverGradient(mod.id)} rounded-xl p-8 flex flex-col gap-2`}>
+        <h1 className="font-display text-5xl text-white">{mod.title}</h1>
         {mod.description && (
-          <p className="text-muted-foreground">{mod.description}</p>
+          <p className="text-white/70 text-sm">{mod.description}</p>
         )}
       </div>
 

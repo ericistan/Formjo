@@ -67,7 +67,7 @@ const LessonDetail = () => {
   }
 
   return (
-    <div className="py-8 max-w-lg mx-auto flex flex-col gap-6">
+    <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
       {/* Coach action bar */}
       <div className="flex justify-end gap-2">
         <Button
@@ -98,17 +98,10 @@ const LessonDetail = () => {
         </AlertDialog>
       </div>
 
-      {/* Lesson content — student view */}
-      <div className="flex flex-col gap-4">
-        <h1 className="font-display text-4xl">{lesson.title}</h1>
-        <p className="text-sm text-muted-foreground">
-          {lesson.category} · {lesson.difficulty}
-        </p>
-        {lesson.description && <p>{lesson.description}</p>}
-
-        {/* Media */}
+      {/* Lesson content card */}
+      <div className="border border-border rounded-xl overflow-hidden flex flex-col">
         {lesson.media_type === "youtube" && lesson.media_url && (
-          <div className="aspect-video rounded-md overflow-hidden">
+          <div className="aspect-video">
             <iframe
               src={`https://www.youtube.com/embed/${extractYouTubeId(lesson.media_url)}`}
               title="Lesson video"
@@ -118,27 +111,37 @@ const LessonDetail = () => {
           </div>
         )}
         {lesson.media_type === "upload" && lesson.media_url && (
-          <video
-            src={lesson.media_url}
-            controls
-            className="w-full rounded-md"
-          />
+          <video src={lesson.media_url} controls className="w-full" />
         )}
+        <div className="flex flex-col gap-1.5 p-4">
+          <h1 className="font-display text-4xl">{lesson.title}</h1>
+          <p className="text-sm text-muted-foreground">
+            {lesson.category} · {lesson.difficulty}
+          </p>
+          {lesson.description && (
+            <p className="text-sm mt-1">{lesson.description}</p>
+          )}
+        </div>
 
-        {/* Steps */}
-        {lesson.steps.length > 0 && (
-          <ol className="flex flex-col gap-2">
-            {lesson.steps.map((step) => (
-              <li key={step.id} className="flex gap-3">
-                <span className="text-muted-foreground shrink-0">
-                  {step.order_index}.
-                </span>
-                <span>{step.instruction}</span>
-              </li>
-            ))}
-          </ol>
-        )}
       </div>
+
+      {lesson.steps.length > 0 && (
+        <div className="border border-border rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-border">
+            <h2 className="font-display text-2xl">Steps</h2>
+          </div>
+          <div className="flex flex-col divide-y divide-border">
+            {lesson.steps.map((step) => (
+              <div key={step.id} className="flex items-center gap-4 px-4 py-3">
+                <span className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold shrink-0">
+                  {step.order_index}
+                </span>
+                <span className="text-sm font-medium">{step.instruction}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

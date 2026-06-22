@@ -11,7 +11,7 @@ function extractYouTubeId(url) {
   return match ? match[1] : null;
 }
 
-const SubmissionCard = ({ submission, token }) => {
+const SubmissionCard = ({ submission, token, attemptNumber }) => {
   const [comments, setComments] = useState([]);
   const [body, setBody] = useState("");
 
@@ -32,16 +32,10 @@ const SubmissionCard = ({ submission, token }) => {
     if (!body.trim()) return;
     const response = await fetch(`${import.meta.env.VITE_API_URL}/comment`, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
       body: JSON.stringify({ submission_id: submission.id, body }),
     });
-    if (response.ok) {
-      setBody("");
-      fetchComments();
-    }
+    if (response.ok) { setBody(""); fetchComments(); }
   }
 
   async function handleDeleteComment(commentId) {
@@ -53,41 +47,91 @@ const SubmissionCard = ({ submission, token }) => {
   }
 
   return (
-    <div className="flex flex-col gap-3 border border-border rounded-lg p-4">
-      <video src={submission.media_url} controls className="w-full rounded-md" />
-      {submission.notes && (
-        <p className="text-sm text-muted-foreground">{submission.notes}</p>
-      )}
-      <p className="text-xs text-muted-foreground">
-        {submission.student_name} · {new Date(submission.created_at).toLocaleDateString()}
-      </p>
+    <div className="flex flex-col bg-card border border-border rounded-xl overflow-hidden">
+      {/* Attempt header */}
+      <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+        <div className="flex items-center gap-2">
+          <span className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Attempt {attemptNumber}
+          </span>
+          <span className="text-xs text-muted-foreground">·</span>
+          <span className="text-xs font-semibold">{submission.student_name}</span>
+        </div>
+        <span className="text-xs text-muted-foreground">
+          {new Date(submission.created_at).toLocaleDateString()}
+        </span>
+      </div>
 
-      <div className="flex flex-col gap-2 pt-2 border-t border-border">
+      {/* Video */}
+      {submission.media_type === "youtube" ? (
+        <div className="aspect-video">
+          <iframe
+            src={`https://www.youtube.com/embed/${extractYouTubeId(submission.media_url)}`}
+            title="Submission video"
+            className="w-full h-full"
+            allowFullScreen
+          />
+        </div>
+      ) : (
+        <video src={submission.media_url} controls className="w-full" />
+      )}
+
+      {/* Notes */}
+      {submission.notes && (
+        <div className="flex flex-col gap-1 px-4 pt-4">
+          <p className="text-xs uppercase tracking-widest text-muted-foreground">Student notes</p>
+          <p className="text-sm">{submission.notes}</p>
+        </div>
+      )}
+
+      {/* Feedback thread */}
+      <div className="m-4 rounded-lg bg-muted overflow-hidden">
+        <div className="px-4 py-2.5 border-b border-border">
+          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Feedback
+          </p>
+        </div>
+
         {comments.length === 0 ? (
-          <p className="text-xs text-muted-foreground">No feedback yet.</p>
+          <div className="px-4 py-4">
+            <p className="text-sm text-muted-foreground">No feedback yet.</p>
+          </div>
         ) : (
-          comments.map((c) => (
-            <div key={c.id} className="flex items-start justify-between gap-2">
-              <div className="flex flex-col gap-0.5">
-                <p className="text-sm">{c.body}</p>
-                <p className="text-xs text-muted-foreground">{c.author_name}</p>
-              </div>
-              <button
-                onClick={() => handleDeleteComment(c.id)}
-                className="text-muted-foreground hover:text-destructive text-lg leading-none shrink-0"
-              >
-                ×
-              </button>
-            </div>
-          ))
+          <div className="flex flex-col divide-y divide-border">
+            {comments.map((c) => {
+              const isCoach = c.author_role === "coach";
+              return (
+                <div key={c.id} className="flex flex-col gap-1.5 px-4 py-3">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold">
+                      {isCoach ? "You" : c.author_name}
+                    </span>
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      {new Date(c.created_at).toLocaleDateString()}
+                    </span>
+                    <button
+                      onClick={() => handleDeleteComment(c.id)}
+                      className="text-muted-foreground hover:text-destructive text-sm leading-none shrink-0"
+                      title="Delete"
+                    >
+                      ×
+                    </button>
+                  </div>
+                  <p className="text-sm leading-relaxed">{c.body}</p>
+                </div>
+              );
+            })}
+          </div>
         )}
-        <form onSubmit={handleComment} className="flex gap-2 mt-1">
+
+        <form onSubmit={handleComment} className="flex gap-2 p-3 border-t border-border">
           <Input
             placeholder="Leave feedback..."
             value={body}
             onChange={(e) => setBody(e.target.value)}
+            className="bg-background"
           />
-          <Button type="submit" size="sm">Send</Button>
+          <Button type="submit" size="sm" disabled={!body.trim()}>Send</Button>
         </form>
       </div>
     </div>
@@ -143,7 +187,7 @@ const CoachAssignmentLesson = () => {
     return <p className="p-6 text-muted-foreground">Loading lesson...</p>;
 
   return (
-    <div className="py-8 max-w-lg mx-auto flex flex-col gap-6">
+    <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
       <button
         onClick={() => navigate(`/coach/assignments/${id}`)}
         className="text-sm text-muted-foreground hover:text-foreground self-start"
@@ -151,64 +195,80 @@ const CoachAssignmentLesson = () => {
         ← Back to assignment
       </button>
 
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex flex-col gap-1">
+      <div className="border border-border rounded-xl overflow-hidden flex flex-col">
+        {lesson.media_type === "youtube" && lesson.media_url && (
+          <div className="aspect-video">
+            <iframe
+              src={`https://www.youtube.com/embed/${extractYouTubeId(lesson.media_url)}`}
+              title="Lesson video"
+              className="w-full h-full"
+              allowFullScreen
+            />
+          </div>
+        )}
+        {lesson.media_type === "upload" && lesson.media_url && (
+          <video src={lesson.media_url} controls className="w-full" />
+        )}
+        <div className="flex flex-col gap-1 p-4">
           <h1 className="font-display text-4xl">{lesson.title}</h1>
           <p className="text-sm text-muted-foreground">
             {lesson.category} · {lesson.difficulty}
           </p>
-        </div>
-        <button
-          onClick={handleToggleComplete}
-          className={`shrink-0 w-8 h-8 rounded-full border-2 flex items-center justify-center transition-colors mt-1 ${
-            isComplete
-              ? "bg-green-500 border-green-500 text-white"
-              : "border-border hover:border-foreground"
-          }`}
-          title={isComplete ? "Mark incomplete" : "Mark complete"}
-        >
-          {isComplete && (
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M2.5 7l3 3 6-6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
+          {lesson.description && (
+            <p className="text-sm mt-1">{lesson.description}</p>
           )}
-        </button>
+        </div>
+        <div className="px-4 pb-4">
+          <button
+            onClick={handleToggleComplete}
+            className={`w-full py-2 rounded-lg text-sm font-medium border transition-colors ${
+              isComplete
+                ? "bg-green-500/10 text-green-600 border-green-500/30 hover:bg-red-500/10 hover:text-red-600 hover:border-red-400/40"
+                : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+            }`}
+          >
+            {isComplete ? "✓ Lesson complete" : "Mark as complete"}
+          </button>
+        </div>
       </div>
 
-      {lesson.description && <p>{lesson.description}</p>}
-
-      {lesson.media_type === "youtube" && lesson.media_url && (
-        <div className="aspect-video rounded-md overflow-hidden">
-          <iframe
-            src={`https://www.youtube.com/embed/${extractYouTubeId(lesson.media_url)}`}
-            title="Lesson video"
-            className="w-full h-full"
-            allowFullScreen
-          />
+      {lesson.steps && lesson.steps.length > 0 && (
+        <div className="border border-border rounded-xl overflow-hidden">
+          <div className="px-4 py-3 border-b border-border">
+            <h2 className="font-display text-2xl">Steps</h2>
+          </div>
+          <div className="flex flex-col divide-y divide-border">
+            {lesson.steps.map((step) => (
+              <div key={step.id} className="flex items-center gap-4 px-4 py-3">
+                <span className="w-6 h-6 rounded-full bg-foreground text-background flex items-center justify-center text-xs font-semibold shrink-0">
+                  {step.order_index}
+                </span>
+                <span className="text-sm font-medium">{step.instruction}</span>
+              </div>
+            ))}
+          </div>
         </div>
       )}
-      {lesson.media_type === "upload" && lesson.media_url && (
-        <video src={lesson.media_url} controls className="w-full rounded-md" />
-      )}
 
-      {lesson.steps && lesson.steps.length > 0 && (
-        <ol className="flex flex-col gap-2">
-          {lesson.steps.map((step) => (
-            <li key={step.id} className="flex gap-3">
-              <span className="text-muted-foreground shrink-0">{step.order_index}.</span>
-              <span>{step.instruction}</span>
-            </li>
-          ))}
-        </ol>
-      )}
-
-      <div className="flex flex-col gap-3">
-        <h2 className="font-display text-2xl">Submissions</h2>
+      <div className="flex flex-col gap-4">
+        <div className="flex items-center justify-between">
+          <h2 className="font-display text-2xl">Submissions</h2>
+          {submissions.length > 0 && (
+            <span className="text-sm text-muted-foreground">
+              {submissions.length} attempt{submissions.length !== 1 ? "s" : ""}
+            </span>
+          )}
+        </div>
         {submissions.length === 0 ? (
           <p className="text-sm text-muted-foreground">No submissions yet.</p>
         ) : (
-          submissions.map((sub) => (
-            <SubmissionCard key={sub.id} submission={sub} token={token} />
+          submissions.map((sub, index) => (
+            <SubmissionCard
+              key={sub.id}
+              submission={sub}
+              token={token}
+              attemptNumber={submissions.length - index}
+            />
           ))
         )}
       </div>
