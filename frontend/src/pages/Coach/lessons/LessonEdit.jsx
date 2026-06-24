@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useState, useEffect } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../../../context/AuthContext";
 import {
   Card,
   CardHeader,
@@ -12,7 +12,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 
-// Regex Function to handle youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, youtube.com/embed/
 function extractYouTubeId(url) {
   const match = url.match(
     /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
@@ -20,15 +19,20 @@ function extractYouTubeId(url) {
   return match ? match[1] : null;
 }
 
-// Hardcoded options — no backend endpoint needed for these yet
-const CATEGORIES = ["Striking", "Footwork", "Defence"];
+const CATEGORIES = [
+  "General",
+  "Conditioning",
+  "Striking",
+  "Footwork",
+  "Defence",
+];
 const DIFFICULTIES = ["Beginner", "Intermediate", "Advanced"];
 
-const LessonCreate = () => {
+const LessonEdit = () => {
   const { token } = useAuth();
+  const { id } = useParams();
   const navigate = useNavigate();
 
-  // All form fields in one state object
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -38,51 +42,73 @@ const LessonCreate = () => {
     media_url: "",
   });
 
-  // Steps are kept separate — each entry is a plain string (the instruction)
   const [steps, setSteps] = useState([]);
   const [error, setError] = useState(null);
 
-  // One handler for all inputs
+  useEffect(() => {
+    async function fetchLesson() {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/lesson/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      const data = await response.json();
+      if (response.ok) {
+        setFormData({
+          title: data.title,
+          description: data.description || "",
+          category: data.category,
+          difficulty: data.difficulty,
+          media_type: data.media_type || "",
+          media_url: data.media_url || "",
+        });
+        setSteps(data.steps.map((s) => s.instruction));
+      }
+    }
+    fetchLesson();
+  }, [id]);
+
   function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    setFormData({ ...formData, [e.target.name]: e.target.value }); //this is a dynamic way to update the formData state based on the input's name attribute
   }
 
   async function handleSubmit(e) {
     e.preventDefault();
     setError(null);
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/lesson`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+    const response = await fetch(
+      `${import.meta.env.VITE_API_URL}/lesson/${id}`,
+      {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          ...formData,
+          steps: steps.map((instruction, i) => ({
+            order_index: i + 1,
+            instruction,
+          })),
+        }),
       },
-      body: JSON.stringify({
-        ...formData,
-        // Map steps array to objects the backend expects
-        steps: steps.map((instruction, i) => ({
-          order_index: i + 1,
-          instruction,
-        })),
-      }),
-    });
+    );
 
     const data = await response.json();
 
     if (!response.ok) {
-      setError(data.msg);
-      return;
+      setError(data.message || "Failed to update lesson");
+    } else {
+      navigate(`/coach/lessons/${id}`);
     }
-
-    // On success, go back to the lesson list
-    navigate("/coach/lessons");
   }
 
-  // Reusable class string for native select + textarea to match shadcn Input look
   const selectClass =
     "border-input bg-background text-foreground flex h-9 w-full rounded-md border px-3 py-1 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring";
 
-  // Derived — recalculates on every render as media_url changes
   const youtubeId =
     formData.media_type === "youtube"
       ? extractYouTubeId(formData.media_url)
@@ -92,10 +118,9 @@ const LessonCreate = () => {
     <div className="py-8 max-w-3xl mx-auto px-4">
       <Card>
         <CardHeader>
-          <CardTitle>Create a lesson</CardTitle>
+          <CardTitle>Edit lesson</CardTitle>
         </CardHeader>
         <CardContent>
-          {/* form id lets the submit Button in CardFooter trigger this form */}
           <form
             id="lesson-form"
             onSubmit={handleSubmit}
@@ -106,7 +131,6 @@ const LessonCreate = () => {
               <Input
                 id="title"
                 name="title"
-                placeholder="e.g. Jab Cross Combo"
                 value={formData.title}
                 onChange={handleChange}
                 required
@@ -115,11 +139,9 @@ const LessonCreate = () => {
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="description">Description</Label>
-              {/* textarea for multi-line text */}
               <textarea
                 id="description"
                 name="description"
-                placeholder="What will students learn?"
                 value={formData.description}
                 onChange={handleChange}
                 rows={3}
@@ -129,7 +151,6 @@ const LessonCreate = () => {
 
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="category">Category</Label>
-              {/* Maps over CATEGORIES array to generate options */}
               <select
                 id="category"
                 name="category"
@@ -180,18 +201,15 @@ const LessonCreate = () => {
               </select>
             </div>
 
-            {/* YouTube: URL input + live preview embed */}
             {formData.media_type === "youtube" && (
               <div className="flex flex-col gap-2">
                 <Label htmlFor="media_url">YouTube URL</Label>
                 <Input
                   id="media_url"
                   name="media_url"
-                  placeholder="https://www.youtube.com/watch?v=..."
                   value={formData.media_url}
                   onChange={handleChange}
                 />
-                {/* Show embed as soon as a valid video ID is detected */}
                 {youtubeId && (
                   <div className="rounded-md overflow-hidden aspect-video w-full">
                     <iframe
@@ -202,7 +220,6 @@ const LessonCreate = () => {
                     />
                   </div>
                 )}
-                {/* Nudge if user typed something but it's not a valid YouTube URL yet */}
                 {formData.media_url && !youtubeId && (
                   <p className="text-xs text-muted-foreground">
                     Paste a valid YouTube link to see a preview.
@@ -211,7 +228,6 @@ const LessonCreate = () => {
               </div>
             )}
 
-            {/* Upload: Cloudinary widget — opens their hosted file picker */}
             {formData.media_type === "upload" && (
               <div className="flex flex-col gap-2">
                 <Label>Video upload</Label>
@@ -219,31 +235,29 @@ const LessonCreate = () => {
                   type="button"
                   variant="outline"
                   onClick={() => {
-                    // window.cloudinary is available because of the script tag in index.html
                     const widget = window.cloudinary.createUploadWidget(
                       {
                         cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
-                        uploadPreset: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+                        uploadPreset: import.meta.env
+                          .VITE_CLOUDINARY_UPLOAD_PRESET,
                         sources: ["local", "url", "camera"],
                         resourceType: "video",
-                        maxFileSize: 100000000, // 100MB
+                        maxFileSize: 100000000,
                       },
                       (error, result) => {
-                        // result.event === "success" fires once upload completes
                         if (!error && result.event === "success") {
                           setFormData((prev) => ({
                             ...prev,
                             media_url: result.info.secure_url,
                           }));
                         }
-                      }
+                      },
                     );
                     widget.open();
                   }}
                 >
                   Upload video
                 </Button>
-                {/* Show video preview and URL once Cloudinary returns the secure_url */}
                 {formData.media_url && (
                   <>
                     <video
@@ -259,17 +273,14 @@ const LessonCreate = () => {
               </div>
             )}
 
-            {/* Steps section */}
             <div className="flex flex-col gap-2">
               <Label>Steps</Label>
               {steps.map((instruction, index) => (
                 <div key={index} className="flex items-center gap-2">
-                  {/* Step number badge */}
                   <span className="text-sm text-muted-foreground w-5 shrink-0 text-right">
                     {index + 1}.
                   </span>
                   <Input
-                    placeholder="e.g. 10 min jumping jacks"
                     value={instruction}
                     onChange={(e) => {
                       const updated = [...steps];
@@ -277,7 +288,6 @@ const LessonCreate = () => {
                       setSteps(updated);
                     }}
                   />
-                  {/* Remove this step */}
                   <button
                     type="button"
                     onClick={() =>
@@ -306,13 +316,12 @@ const LessonCreate = () => {
         </CardContent>
         <CardFooter className="flex-col gap-3">
           <Button type="submit" form="lesson-form" className="w-full">
-            Create lesson
+            Save changes
           </Button>
-          {/* Cancel navigates back without submitting */}
           <Button
             variant="ghost"
             className="w-full"
-            onClick={() => navigate("/coach/lessons")}
+            onClick={() => navigate(`/coach/lessons/${id}`)}
           >
             Cancel
           </Button>
@@ -322,4 +331,4 @@ const LessonCreate = () => {
   );
 };
 
-export default LessonCreate;
+export default LessonEdit;

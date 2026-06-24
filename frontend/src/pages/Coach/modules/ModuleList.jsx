@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 
 const GRADIENTS = [
   "from-slate-700 to-slate-900",
@@ -33,9 +34,9 @@ const ModuleList = () => {
     <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
       <button
         onClick={() => navigate("/coach/dashboard")}
-        className="text-sm text-muted-foreground hover:text-foreground self-start"
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground self-start"
       >
-        ← Back to dashboard
+        <ChevronLeft className="size-4" /> Back to dashboard
       </button>
 
       <div className="flex items-center justify-between">

@@ -3,55 +3,66 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 from db.db_pool import get_cursor, release_connection
 
+# Blueprint groups related routes — all auth routes (/auth/signup, /auth/signin, etc.) live here
 auth = Blueprint('auth', __name__)
 
-@auth.route('/auth/signup', methods = ['PUT'])
+
+@auth.route('/auth/signup', methods=['PUT'])
 def signup():
+    # Parse the JSON body sent from the frontend (email, password, name, role)
     data = request.get_json()
-    #The incoming request carries a JSON body (email + password from the frontend). This line unpacks it into a Python dictionary, so you can do data['email'], data['password'], etc.
 
     conn, cursor = get_cursor()
-    #Opens a connection to your database (like opening a channel to talk to Postgres/MySQL)
 
+    # Check if this email already exists before creating a duplicate account
+    # %s is a parameterized placeholder — psycopg2 escapes it to prevent SQL injection
     cursor.execute('SELECT id FROM users WHERE email=%s;', (data['email'],))
-    #Runs a SQL query: "Find any user where email matches what was submitted"
-    # %s is a safe placeholder — it prevents SQL injection attacks
-
     results = cursor.fetchone()
-    #fetchone() — Grabs the first matching row, or None if nothing found
-
 
     if results:
         release_connection(conn)
-        return jsonify(status = 'error', msg = 'duplicate email'), 400
+        # 400 = Bad Request — tell the client their input caused the problem
+        return jsonify(status='error', msg='duplicate email'), 400
 
+    # Hash the password before storing — NEVER store plain-text passwords in the database
+    # bcrypt.gensalt() generates a random "salt" added to the password before hashing
+    # This means two identical passwords produce different hashes (prevents rainbow table attacks)
     hashed = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
-    #.encode('utf-8')Converts the string to bytes (bcrypt requires this)
-    # Generates a random salt — a unique noise added to the password before hashing
 
+    # RETURNING lets us immediately get the newly created row without a second SELECT query
     cursor.execute(
         'INSERT INTO users (email, password_hash, role, name) VALUES (%s, %s, %s, %s) RETURNING id, email, role, name',
         (data['email'], hashed.decode('utf-8'), data['role'], data['name']))
 
     new_user = cursor.fetchone()
+    # conn.commit() saves the INSERT permanently — without this it would be rolled back
     conn.commit()
     release_connection(conn)
+
+    # Create a JWT using the user's database ID as the "identity" (the subject of the token)
+    # additional_claims embeds name + role inside the token so we can read them without a DB query
     access_token = create_access_token(str(new_user['id']),
                                        additional_claims={'name': new_user['name'], 'role': new_user['role']})
+    # 201 = Created — the standard HTTP status for successfully creating a new resource
     return jsonify(access=access_token, user=new_user), 201
 
 
-@auth.route('/auth/signin', methods = ['POST'])
+@auth.route('/auth/signin', methods=['POST'])
 def signin():
     data = request.get_json()
     conn, cursor = get_cursor()
+
     cursor.execute('SELECT * FROM users WHERE email=%s', (data['email'],))
     results = cursor.fetchone()
     release_connection(conn)
 
+    # Return the same vague error whether the email is wrong OR the password is wrong
+    # This is a security best practice — it prevents attackers from discovering valid emails
     if not results:
         return jsonify(status='error', msg='username or password is wrong'), 400
 
+    # bcrypt.checkpw re-hashes the submitted password with the stored salt and compares
+    # You never decrypt a bcrypt hash — you only ever compare
     valid = bcrypt.checkpw(data['password'].encode('utf-8'), results['password_hash'].encode('utf-8'))
 
     if not valid:
@@ -59,10 +70,13 @@ def signin():
 
     access_token = create_access_token(str(results['id']),
                                        additional_claims={'name': results['name'], 'role': results['role']})
-    return jsonify(access=access_token, user={'id': results['id'], 'email': results['email'], 'name': results['name'],
-                                              'role': results['role']})
+    return jsonify(access=access_token, user={'id': results['id'], 'email': results['email'],
+                                              'name': results['name'], 'role': results['role']})
+
 
 @auth.route('/auth/signout', methods=['POST'])
 @jwt_required()
 def signout():
+    # JWTs are stateless — the server never stores them, so "signout" just means
+    # the frontend deletes the token from localStorage. This endpoint is a clean API contract.
     return jsonify(status='ok', msg='signed out'), 200

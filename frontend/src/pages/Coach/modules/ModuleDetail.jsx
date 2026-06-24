@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { ChevronLeft } from "lucide-react";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import {
@@ -32,12 +33,17 @@ const ModuleDetail = () => {
   const { token } = useAuth();
   const navigate = useNavigate();
   const [mod, setMod] = useState(null);
+  // students list is used to populate the "Assign to student" dropdown
   const [students, setStudents] = useState([]);
+  // assignments shows who this module has already been assigned to
   const [assignments, setAssignments] = useState([]);
+  // showAssignForm toggles the inline assignment form in and out
   const [showAssignForm, setShowAssignForm] = useState(false);
+  // assignData holds the form fields (student + optional due date)
   const [assignData, setAssignData] = useState({ student_id: "", due_date: "" });
   const [assignSuccess, setAssignSuccess] = useState(false);
 
+  // Three parallel fetches — all fire at the same time, results destructured in order
   async function fetchData() {
     const [moduleRes, studentsRes, assignmentsRes] = await Promise.all([
       fetch(`${import.meta.env.VITE_API_URL}/module/${id}`, {
@@ -46,6 +52,7 @@ const ModuleDetail = () => {
       fetch(`${import.meta.env.VITE_API_URL}/students`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
+      // Filter assignments to only this module so the "Assigned to" list is relevant
       fetch(`${import.meta.env.VITE_API_URL}/assignment?module_id=${id}`, {
         headers: { Authorization: `Bearer ${token}` },
       }),
@@ -80,6 +87,7 @@ const ModuleDetail = () => {
         Authorization: `Bearer ${token}`,
       },
       body: JSON.stringify({
+        // Number() converts the string from the select value to an integer for the backend
         module_id: Number(id),
         student_id: Number(assignData.student_id),
         due_date: assignData.due_date || null,
@@ -88,7 +96,9 @@ const ModuleDetail = () => {
     if (response.ok) {
       setAssignSuccess(true);
       setShowAssignForm(false);
+      // Reset the form fields so it's clean next time
       setAssignData({ student_id: "", due_date: "" });
+      // Re-fetch to show the new assignment in the "Assigned to" list
       fetchData();
     }
   }
@@ -103,9 +113,9 @@ const ModuleDetail = () => {
     <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
       <button
         onClick={() => navigate("/coach/modules")}
-        className="text-sm text-muted-foreground hover:text-foreground self-start"
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground self-start"
       >
-        ← Back to modules
+        <ChevronLeft className="size-4" /> Back to modules
       </button>
       <div className="flex justify-end gap-2">
         <Button onClick={() => { setShowAssignForm(!showAssignForm); setAssignSuccess(false); }}>

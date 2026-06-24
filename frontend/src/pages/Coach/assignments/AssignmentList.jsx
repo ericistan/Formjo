@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft, CalendarDays } from "lucide-react";
 
 const GRADIENTS = [
   "from-slate-700 to-slate-900",
@@ -29,6 +30,10 @@ const AssignmentList = () => {
     fetchAssignments();
   }, []);
 
+  // reduce() transforms the flat assignments array into an object grouped by student name
+  // Starting value {} grows as each assignment is processed
+  // Result: { "Alice": [assignment1, assignment3], "Bob": [assignment2] }
+  // No backend change needed — student_name is already in the assignment list response
   const studentGroups = assignments.reduce((acc, a) => {
     if (!acc[a.student_name]) acc[a.student_name] = [];
     acc[a.student_name].push(a);
@@ -39,9 +44,9 @@ const AssignmentList = () => {
     <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
       <button
         onClick={() => navigate("/coach/dashboard")}
-        className="text-sm text-muted-foreground hover:text-foreground self-start"
+        className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground self-start"
       >
-        ← Back to dashboard
+        <ChevronLeft className="size-4" /> Back to dashboard
       </button>
 
       <div className="flex items-center justify-between">
@@ -55,6 +60,7 @@ const AssignmentList = () => {
         <p className="text-sm text-muted-foreground">No assignments yet.</p>
       ) : (
         <div className="flex flex-col gap-8">
+          {/* Object.entries() converts { "Alice": [...] } → [["Alice", [...]]] so we can .map() over it */}
           {Object.entries(studentGroups).map(([studentName, studentAssignments]) => (
             <div key={studentName} className="flex flex-col gap-3">
               <div className="flex items-center justify-between">
@@ -87,8 +93,9 @@ const AssignmentList = () => {
                           {a.status === "completed" ? "✓ Completed" : "◷ In Progress"}
                         </span>
                         {a.due_date && (
-                          <span className="text-xs text-muted-foreground">
-                            ⊟ {new Date(a.due_date).toLocaleDateString()}
+                          <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                            <CalendarDays className="size-3" />
+                            {new Date(a.due_date).toLocaleDateString()}
                           </span>
                         )}
                       </div>

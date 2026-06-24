@@ -20,10 +20,18 @@ def create_comment():
         release_connection(conn)
         return jsonify(status='error', msg='submission not found'), 404
 
+    # body and audio_url are mutually optional — a comment can be text, voice, or both
+    body = data.get('body') or None
+    audio_url = data.get('audio_url') or None
+
+    if not body and not audio_url:
+        release_connection(conn)
+        return jsonify(status='error', msg='comment must have body or audio_url'), 400
+
     cursor.execute(
-        '''INSERT INTO comments (submission_id, author_id, body)
-           VALUES (%s, %s, %s) RETURNING id''',
-        (data['submission_id'], author_id, data['body'])
+        '''INSERT INTO comments (submission_id, author_id, body, audio_url)
+           VALUES (%s, %s, %s, %s) RETURNING id''',
+        (data['submission_id'], author_id, body, audio_url)
     )
     new_id = cursor.fetchone()['id']
     conn.commit()
@@ -40,6 +48,7 @@ def get_comments():
     cursor.execute(
         '''SELECT comments.id,
                   comments.body,
+                  comments.audio_url,
                   comments.created_at,
                   users.name AS author_name,
                   users.role AS author_role

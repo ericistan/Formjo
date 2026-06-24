@@ -2,15 +2,21 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from db.db_pool import get_cursor, release_connection
 
+# All lesson routes are grouped in this Blueprint
 lesson = Blueprint('lesson', __name__)
 
+
 @lesson.route('/lesson', methods=['POST'])
-@jwt_required()
+@jwt_required()  # This decorator blocks the request if no valid JWT is in the Authorization header
 def create_lesson():
     data = request.get_json()
+    # get_jwt_identity() reads the user's ID out of the JWT — we stored it there at signin
+    # This tells us WHO is making the request without a database lookup
     coach_id = get_jwt_identity()
     conn, cursor = get_cursor()
 
+    # Category and difficulty are stored as lookup tables (foreign keys)
+    # The frontend sends the name ("Striking"), we resolve it to the database ID
     cursor.execute('SELECT id FROM categories WHERE name=%s;', (data['category'],))
     category = cursor.fetchone()
 
@@ -21,6 +27,7 @@ def create_lesson():
         release_connection(conn)
         return jsonify(status='error', msg='invalid category or difficulty'), 400
 
+    # RETURNING id gives us the new row's ID immediately — used to insert steps next
     cursor.execute(
         '''INSERT INTO lesson (created_by, category_id, difficulty_id, title, description, media_type, media_url)
            VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id''',
@@ -42,6 +49,8 @@ def create_lesson():
 
     conn.commit()
 
+    # Re-fetch the full lesson with JOINs so the response includes human-readable names
+    # (e.g. "Striking" instead of category_id=2)
     cursor.execute(
         '''SELECT lesson.id, lesson.title, lesson.description, lesson.media_type, lesson.media_url, lesson.created_at,
                   users.name AS created_by,
@@ -59,11 +68,15 @@ def create_lesson():
     release_connection(conn)
     return jsonify(new_lesson), 201
 
+
 @lesson.route('/lesson/<int:id>', methods=['GET'])
 @jwt_required()
 def get_lesson_by_id(id):
+    # id comes from the URL — Flask extracts it automatically because of <int:id> in the route
     conn, cursor = get_cursor()
 
+    # JOIN pulls data from multiple tables in one query
+    # Instead of doing lesson + users + categories + difficulty as 4 separate queries, we do 1
     cursor.execute(
         '''SELECT lesson.id, lesson.title, lesson.description, lesson.media_type, lesson.media_url, lesson.created_at,
                   users.name AS created_by,
@@ -80,9 +93,10 @@ def get_lesson_by_id(id):
 
     if not lesson_data:
         release_connection(conn)
+        # 404 = Not Found — the resource doesn't exist
         return jsonify(status='error', msg='lesson not found'), 404
 
-    # Fetch steps ordered by their position
+    # Fetch steps as a separate query — they live in a different table (one-to-many relationship)
     cursor.execute(
         'SELECT id, order_index, instruction FROM lesson_steps WHERE lesson_id = %s ORDER BY order_index',
         (id,)
@@ -90,11 +104,14 @@ def get_lesson_by_id(id):
     steps = cursor.fetchall()
 
     release_connection(conn)
-    return jsonify({ **lesson_data, 'steps': steps }), 200
+    # ** unpacks lesson_data dict, then we add 'steps' key — merges both into one JSON response
+    return jsonify({**lesson_data, 'steps': steps}), 200
+
 
 @lesson.route('/lesson', methods=['GET'])
 @jwt_required()
 def get_lesson():
+    # Only return lessons created by THIS coach — each coach sees only their own content
     coach_id = get_jwt_identity()
     conn, cursor = get_cursor()
 
@@ -123,6 +140,8 @@ def update_lesson(id):
     coach_id = get_jwt_identity()
     conn, cursor = get_cursor()
 
+    # Ownership check — verify this lesson belongs to the requesting coach before allowing edits
+    # Combining id AND created_by in the WHERE clause means a coach can't edit another coach's lessons
     cursor.execute('SELECT id FROM lesson WHERE id=%s AND created_by=%s;', (id, coach_id))
     existing = cursor.fetchone()
 
@@ -155,6 +174,7 @@ def update_lesson(id):
 
     conn.commit()
 
+    # Delete all existing steps and re-insert — simpler than diffing which steps changed/were added/removed
     cursor.execute('DELETE FROM lesson_steps WHERE lesson_id = %s', (id,))
 
     steps = data.get('steps', [])
@@ -165,9 +185,10 @@ def update_lesson(id):
                 'INSERT INTO lesson_steps (lesson_id, order_index, instruction) VALUES (%s, %s, %s)',
                 (id, i + 1, instruction)
             )
-# deletes lesson steps so that any new/changedupdates will be rendered to the frontend
+
     conn.commit()
 
+    # Return the full updated lesson so the frontend can update its state without a second fetch
     cursor.execute(
         '''SELECT lesson.id, lesson.title, lesson.description, lesson.media_type, lesson.media_url, lesson.created_at,
                   users.name AS created_by,
@@ -185,12 +206,14 @@ def update_lesson(id):
     release_connection(conn)
     return jsonify(updated), 200
 
+
 @lesson.route('/lesson/<int:id>', methods=['DELETE'])
 @jwt_required()
 def delete_lesson(id):
     coach_id = get_jwt_identity()
     conn, cursor = get_cursor()
 
+    # Ownership check — same pattern as update: coach can only delete their own lessons
     cursor.execute('SELECT id FROM lesson WHERE id=%s AND created_by=%s;', (id, coach_id))
     existing = cursor.fetchone()
 

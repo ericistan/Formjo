@@ -1,7 +1,8 @@
 import { useParams, useNavigate } from "react-router-dom";
-import { useAuth } from "../../context/AuthContext";
+import { useAuth } from "../../../context/AuthContext";
 import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
+import { ChevronLeft } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogTrigger,
@@ -69,7 +70,14 @@ const LessonDetail = () => {
   return (
     <div className="py-8 max-w-3xl mx-auto px-4 flex flex-col gap-6">
       {/* Coach action bar */}
-      <div className="flex justify-end gap-2">
+      <div className="flex items-center justify-between gap-2">
+        <button
+          onClick={() => navigate("/coach/lessons")}
+          className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
+        >
+          <ChevronLeft className="size-4" /> Back
+        </button>
+        <div className="flex gap-2">
         <Button
           variant="outline"
           onClick={() => navigate(`/coach/lessons/${id}/edit`)}
@@ -96,6 +104,7 @@ const LessonDetail = () => {
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
+        </div>
       </div>
 
       {/* Lesson content card */}

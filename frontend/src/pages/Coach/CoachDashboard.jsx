@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
+import { CalendarDays } from "lucide-react";
 
 const GRADIENTS = [
   "from-slate-700 to-slate-900",
@@ -16,10 +17,12 @@ const CoachDashboard = () => {
   const { user, token } = useAuth();
   const navigate = useNavigate();
   const [assignments, setAssignments] = useState([]);
+  // progress is a map of { [assignment_id]: { total, done } } used to power progress bars on each card
   const [progress, setProgress] = useState({});
 
   useEffect(() => {
     async function fetchData() {
+      // Step 1: fetch the assignment list (all assignments this coach created)
       const assignRes = await fetch(
         `${import.meta.env.VITE_API_URL}/assignment`,
         {
@@ -30,6 +33,8 @@ const CoachDashboard = () => {
       const list = await assignRes.json();
       setAssignments(list);
 
+      // Step 2: fetch each assignment's detail page in parallel to get lesson completion data
+      // Promise.all fires all requests at the same time — faster than a sequential for-loop
       const details = await Promise.all(
         list.map((a) =>
           fetch(`${import.meta.env.VITE_API_URL}/assignment/${a.id}`, {
@@ -38,6 +43,7 @@ const CoachDashboard = () => {
         ),
       );
 
+      // Build a lookup: { [id]: { total: N, done: M } }
       const map = {};
       details.forEach((d) => {
         if (d) {
@@ -52,9 +58,12 @@ const CoachDashboard = () => {
     fetchData();
   }, []);
 
+  // Derived stats — computed from assignments on every render (no extra state)
   const pending = assignments.filter((a) => a.status === "pending").length;
   const completed = assignments.filter((a) => a.status === "completed").length;
 
+  // Group assignments by student to build the "My Students" section
+  // Each student gets: how many assignments total, how many completed, and their latest assignment
   const studentMap = {};
   assignments.forEach((a) => {
     if (!studentMap[a.student_name]) {
@@ -67,9 +76,12 @@ const CoachDashboard = () => {
     }
     studentMap[a.student_name].total += 1;
     if (a.status === "completed") studentMap[a.student_name].completed += 1;
+    // Only set latest once (assignments are returned newest-first from the backend)
     if (!studentMap[a.student_name].latest)
       studentMap[a.student_name].latest = a;
   });
+  // Object.values() converts { "Alice": {...}, "Bob": {...} } → [{ name: "Alice" }, { name: "Bob" }]
+  // studentRows.length is used as the "Total Students" stat — accurate because it's derived from real assignments
   const studentRows = Object.values(studentMap);
 
   return (
@@ -156,8 +168,9 @@ const CoachDashboard = () => {
                         : "◷ In Progress"}
                     </span>
                     {a.due_date && (
-                      <span className="text-xs text-muted-foreground">
-                        ⊟ {new Date(a.due_date).toLocaleDateString()}
+                      <span className="flex items-center gap-1 text-xs text-muted-foreground">
+                        <CalendarDays className="size-3" />
+                        {new Date(a.due_date).toLocaleDateString()}
                       </span>
                     )}
                   </div>

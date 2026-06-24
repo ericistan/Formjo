@@ -119,7 +119,7 @@ const CardNav = ({
     <div className={`relative w-full z-50 ${className}`}>
       <nav
         ref={navRef}
-        className="block h-[60px] p-0 rounded-none shadow-none relative overflow-hidden will-change-[height] border-b border-border md:max-w-3xl md:mx-auto md:border-x md:rounded-b-xl"
+        className="block h-[60px] p-0 rounded-none shadow-none relative overflow-hidden will-change-[height] border-b border-border"
         style={{ backgroundColor: baseColor }}
       >
         {/* Top bar */}
