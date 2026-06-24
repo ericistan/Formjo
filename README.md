@@ -1,7 +1,5 @@
 # Formjo
 
-![Formjo](./frontend/src/assets/hero-boxing.jpg)
-
 A coaching platform that connects coaches and athletes through structured lesson plans, video submissions, and voice feedback. Built for sports where
 technique is everything.
 
@@ -32,8 +30,6 @@ use.
 
 ### Landing Page
 
-![Landing Page](./frontend/src/assets/hero-boxing.jpg)
-
 - Scroll-driven hero animation: image shrinks from full-screen to thumbnail using Framer Motion `useScroll` and `useTransform` across a 300vh sticky scroll
   zone
 - 3-column features section with sticky centre image that swaps based on per-element scroll visibility
@@ -42,8 +38,6 @@ use.
 - Dual-mode theming in OKLCH color space — dark for coaches, light for students
 
 ### Coach Dashboard
-
-![Coach Dashboard](./frontend/src/assets/feature-best-practice.png)
 
 - Overview of all assigned modules and student progress
 - Create, edit, and delete lessons with structured steps, YouTube embeds, or file upload
@@ -60,16 +54,12 @@ use.
 
 ### Voice Feedback
 
-![Voice Feedback](./frontend/src/assets/landingPage-feature_record-audio.png)
-
 - Records audio directly in the browser using the Web Audio API and MediaRecorder
 - Preview before sending, discard and re-record at any time
 - Uploads to Cloudinary and attaches to the feedback thread
 - One-time consent gate persisted via localStorage
 
 ### Lesson Submission Flow
-
-![Lesson Submission](./frontend/src/assets/landingPage-feature_submitTraining.png)
 
 - Students submit a YouTube link per lesson inside an assignment
 - Each submission shows the embedded video, optional notes, and its full feedback thread
