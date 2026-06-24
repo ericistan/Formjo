@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import {
   Card,
   CardHeader,
@@ -11,14 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
-// Regex Function to handle youtube.com/watch?v=, youtu.be/, youtube.com/shorts/, youtube.com/embed/
-function extractYouTubeId(url) {
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  );
-  return match ? match[1] : null;
-}
+import { extractYouTubeId } from "../../../utils/youtube";
 
 // Hardcoded options — no backend endpoint needed for these yet
 const CATEGORIES = [
@@ -57,12 +51,8 @@ const LessonCreate = () => {
     e.preventDefault();
     setError(null);
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/lesson`, {
+    const response = await apiFetch("/lesson", token, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({
         ...formData,
         // Map steps array to objects the backend expects

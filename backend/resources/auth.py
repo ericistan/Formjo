@@ -26,7 +26,7 @@ def signup():
 
     # Hash the password before storing — NEVER store plain-text passwords in the database
     # bcrypt.gensalt() generates a random "salt" added to the password before hashing
-    # This means two identical passwords produce different hashes (prevents rainbow table attacks)
+    # This means two identical passwords produce different hashes (prevents rainbow table attacks by precomputing hashes instead of computing them on the fly.)
     hashed = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
     # RETURNING lets us immediately get the newly created row without a second SELECT query
@@ -35,7 +35,7 @@ def signup():
         (data['email'], hashed.decode('utf-8'), data['role'], data['name']))
 
     new_user = cursor.fetchone()
-    # conn.commit() saves the INSERT permanently — without this it would be rolled back
+    # conn.commit() saves the INSERT permanently, without this it would be rolled back
     conn.commit()
     release_connection(conn)
 
@@ -77,6 +77,4 @@ def signin():
 @auth.route('/auth/signout', methods=['POST'])
 @jwt_required()
 def signout():
-    # JWTs are stateless — the server never stores them, so "signout" just means
-    # the frontend deletes the token from localStorage. This endpoint is a clean API contract.
     return jsonify(status='ok', msg='signed out'), 200

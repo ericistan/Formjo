@@ -2,16 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { CalendarDays } from "lucide-react";
-
-const GRADIENTS = [
-  "from-slate-700 to-slate-900",
-  "from-amber-700 to-orange-900",
-  "from-indigo-700 to-violet-900",
-  "from-teal-700 to-emerald-900",
-  "from-rose-700 to-red-900",
-  "from-stone-600 to-zinc-800",
-];
-const coverGradient = (id) => GRADIENTS[id % GRADIENTS.length];
+import { coverGradient } from "../../utils/gradients";
+import StatusBadge from "../../components/StatusBadge";
+import { apiFetch } from "../../utils/api";
 
 const CoachDashboard = () => {
   const { user, token } = useAuth();
@@ -23,27 +16,23 @@ const CoachDashboard = () => {
   useEffect(() => {
     async function fetchData() {
       // Step 1: fetch the assignment list (all assignments this coach created)
-      const assignRes = await fetch(
-        `${import.meta.env.VITE_API_URL}/assignment`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
-      );
+      const assignRes = await apiFetch("/assignment", token);
       if (!assignRes.ok) return;
       const list = await assignRes.json();
       setAssignments(list);
 
       // Step 2: fetch each assignment's detail page in parallel to get lesson completion data
-      // Promise.all fires all requests at the same time — faster than a sequential for-loop
+      // Promise.all fires all requests at the same time — faster than a sequential for-loop so that the dashboard loads quickly
       const details = await Promise.all(
         list.map((a) =>
-          fetch(`${import.meta.env.VITE_API_URL}/assignment/${a.id}`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }).then((r) => (r.ok ? r.json() : null)),
+          apiFetch(`/assignment/${a.id}`, token).then((r) => (r.ok ? r.json() : null)),
         ),
       );
 
       // Build a lookup: { [id]: { total: N, done: M } }
+      // this is used to power the progress bars on each assignment card
+      // When the cards render, each one needs its own progress. If you stored details as an array, every card would have to call details.find(d => d.id === a.id) —
+      // that's O(n) for each card, so 10 cards scanning 10 items = 100 operations.
       const map = {};
       details.forEach((d) => {
         if (d) {
@@ -59,6 +48,7 @@ const CoachDashboard = () => {
   }, []);
 
   // Derived stats — computed from assignments on every render (no extra state)
+  // this is better than use state because it prevents bugs where the stats get out of sync with the assignments list due to a missed setState call
   const pending = assignments.filter((a) => a.status === "pending").length;
   const completed = assignments.filter((a) => a.status === "completed").length;
 
@@ -156,17 +146,7 @@ const CoachDashboard = () => {
                   </p>
 
                   <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`text-xs font-medium px-2 py-1 rounded flex items-center gap-1 ${
-                        a.status === "completed"
-                          ? "bg-green-500/20 text-green-600"
-                          : "bg-yellow-500/10 text-yellow-600"
-                      }`}
-                    >
-                      {a.status === "completed"
-                        ? "✓ Completed"
-                        : "◷ In Progress"}
-                    </span>
+                    <StatusBadge status={a.status} />
                     {a.due_date && (
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <CalendarDays className="size-3" />
@@ -228,15 +208,7 @@ const CoachDashboard = () => {
                   <p className="text-xs text-muted-foreground">
                     {s.completed}/{s.total} complete
                   </p>
-                  <span
-                    className={`text-xs font-medium px-2 py-0.5 rounded-full ${
-                      s.latest?.status === "completed"
-                        ? "bg-green-500/20 text-green-600"
-                        : "bg-yellow-500/20 text-yellow-600"
-                    }`}
-                  >
-                    {s.latest?.status === "completed" ? "Completed" : "Pending"}
-                  </span>
+                  <StatusBadge status={s.latest?.status} variant="row" />
                 </div>
               </div>
             ))}

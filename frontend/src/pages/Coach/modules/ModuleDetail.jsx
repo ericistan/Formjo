@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ChevronLeft } from "lucide-react";
@@ -17,16 +18,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-
-const GRADIENTS = [
-  "from-slate-700 to-slate-900",
-  "from-amber-700 to-orange-900",
-  "from-indigo-700 to-violet-900",
-  "from-teal-700 to-emerald-900",
-  "from-rose-700 to-red-900",
-  "from-stone-600 to-zinc-800",
-];
-const coverGradient = (id) => GRADIENTS[id % GRADIENTS.length];
+import { coverGradient } from "../../../utils/gradients";
 
 const ModuleDetail = () => {
   const { id } = useParams();
@@ -46,16 +38,10 @@ const ModuleDetail = () => {
   // Three parallel fetches — all fire at the same time, results destructured in order
   async function fetchData() {
     const [moduleRes, studentsRes, assignmentsRes] = await Promise.all([
-      fetch(`${import.meta.env.VITE_API_URL}/module/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
-      fetch(`${import.meta.env.VITE_API_URL}/students`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
+      apiFetch(`/module/${id}`, token),
+      apiFetch("/students", token),
       // Filter assignments to only this module so the "Assigned to" list is relevant
-      fetch(`${import.meta.env.VITE_API_URL}/assignment?module_id=${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      }),
+      apiFetch(`/assignment?module_id=${id}`, token),
     ]);
     const moduleData = await moduleRes.json();
     if (moduleRes.ok) setMod(moduleData);
@@ -68,24 +54,14 @@ const ModuleDetail = () => {
   }, [id]);
 
   async function handleDelete() {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/module/${id}`,
-      {
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` },
-      },
-    );
+    const response = await apiFetch(`/module/${id}`, token, { method: "DELETE" });
     if (response.ok) navigate("/coach/modules");
   }
 
   async function handleAssign(e) {
     e.preventDefault();
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/assignment`, {
+    const response = await apiFetch("/assignment", token, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({
         // Number() converts the string from the select value to an integer for the backend
         module_id: Number(id),

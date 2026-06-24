@@ -18,7 +18,6 @@ const LandingPage = () => {
           interactive={true}
         />
       </div>
-
       <FeaturesSection />
       <TimelineSection />
       <TeamSection />

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { Link } from "react-router-dom";
+import { apiFetch } from "../../../utils/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 
@@ -13,11 +14,7 @@ const LessonList = () => {
   // The async function is defined inside because useEffect callbacks can't be async directly
   useEffect(() => {
     async function fetchLessons() {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/lesson`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      const response = await apiFetch("/lesson", token);
       if (!response.ok) return;
       const data = await response.json();
       // setLessons triggers a re-render — the list appears once data arrives

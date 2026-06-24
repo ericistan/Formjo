@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import {
   Card,
   CardHeader,
@@ -11,13 +12,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-
-function extractYouTubeId(url) {
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  );
-  return match ? match[1] : null;
-}
+import { extractYouTubeId } from "../../../utils/youtube";
 
 const CATEGORIES = [
   "General",
@@ -47,14 +42,7 @@ const LessonEdit = () => {
 
   useEffect(() => {
     async function fetchLesson() {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/lesson/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const response = await apiFetch(`/lesson/${id}`, token);
       const data = await response.json();
       if (response.ok) {
         setFormData({
@@ -79,23 +67,16 @@ const LessonEdit = () => {
     e.preventDefault();
     setError(null);
 
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/lesson/${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          ...formData,
-          steps: steps.map((instruction, i) => ({
-            order_index: i + 1,
-            instruction,
-          })),
-        }),
-      },
-    );
+    const response = await apiFetch(`/lesson/${id}`, token, {
+      method: "PATCH",
+      body: JSON.stringify({
+        ...formData,
+        steps: steps.map((instruction, i) => ({
+          order_index: i + 1,
+          instruction,
+        })),
+      }),
+    });
 
     const data = await response.json();
 

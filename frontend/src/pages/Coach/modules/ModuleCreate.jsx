@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import {
   Card,
   CardHeader,
@@ -23,9 +24,7 @@ const ModuleCreate = () => {
 
   useEffect(() => {
     async function fetchLessons() {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/lesson`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiFetch("/lesson", token);
       if (!response.ok) return;
       const data = await response.json();
       setLessons(data);
@@ -47,12 +46,8 @@ const ModuleCreate = () => {
     e.preventDefault();
     setError(null);
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/module`, {
+    const response = await apiFetch("/module", token, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({
         ...formData,
         lessons: selectedLessons,

@@ -1,5 +1,7 @@
 import { Link } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
+import logoDefault from "../assets/formjo-logo-default.png";
+import logoDarkmode from "../assets/formjo-logo-darkmode.png";
 import { Button } from "@/components/ui/button";
 import CardNav from "./CardNav";
 import { BookOpen, Layers, Users, ClipboardList, LayoutDashboard } from "lucide-react";
@@ -118,9 +120,11 @@ const Navbar = () => {
     </>
   );
 
+  const logoSrc = isCoach ? logoDarkmode : logoDefault;
+
   return (
     <CardNav
-      logoText="Formjo"
+      logoSrc={logoSrc}
       logoHref={logoHref}
       items={items}
       baseColor={colors.base}

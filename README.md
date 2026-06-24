@@ -2,8 +2,6 @@
 
 A coaching platform that connects coaches and athletes through structured lesson plans, video submissions, and voice feedback. Built for sports where technique is everything.
 
-Designed and built solo as a General Assembly Software Engineering capstone. A UX designer who codes — the engineering decisions start with how it feels to use.
-
 ---
 
 ## Technology Stack

@@ -2,16 +2,9 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import { CalendarDays } from "lucide-react";
-
-const GRADIENTS = [
-  "from-slate-700 to-slate-900",
-  "from-amber-700 to-orange-900",
-  "from-indigo-700 to-violet-900",
-  "from-teal-700 to-emerald-900",
-  "from-rose-700 to-red-900",
-  "from-stone-600 to-zinc-800",
-];
-const coverGradient = (id) => GRADIENTS[id % GRADIENTS.length];
+import { coverGradient } from "../../utils/gradients";
+import StatusBadge from "../../components/StatusBadge";
+import { apiFetch } from "../../utils/api";
 
 const StudentDashboard = () => {
   const { user, token } = useAuth();
@@ -23,10 +16,7 @@ const StudentDashboard = () => {
   useEffect(() => {
     async function fetchData() {
       // Step 1: fetch the assignment list (lightweight — no lesson details)
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/student/assignments`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const response = await apiFetch("/student/assignments", token);
       if (!response.ok) return;
       const list = await response.json();
       setAssignments(list);
@@ -36,12 +26,7 @@ const StudentDashboard = () => {
       const details = await Promise.all(
         list.map(
           (a) =>
-            fetch(
-              `${import.meta.env.VITE_API_URL}/student/assignments/${a.id}`,
-              {
-                headers: { Authorization: `Bearer ${token}` },
-              },
-            ).then((r) => (r.ok ? r.json() : null)), // return null if this individual fetch fails
+            apiFetch(`/student/assignments/${a.id}`, token).then((r) => (r.ok ? r.json() : null)), // return null if this individual fetch fails
         ),
       );
 
@@ -125,17 +110,7 @@ const StudentDashboard = () => {
                   </p>
 
                   <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`text-xs font-medium px-2 py-1 rounded flex items-center gap-1 ${
-                        a.status === "completed"
-                          ? "bg-green-500/20 text-green-600"
-                          : "bg-yellow-500/10 text-yellow-600"
-                      }`}
-                    >
-                      {a.status === "completed"
-                        ? "✓ Completed"
-                        : "◷ In Progress"}
-                    </span>
+                    <StatusBadge status={a.status} />
                     {a.due_date && (
                       <span className="flex items-center gap-1 text-xs text-muted-foreground">
                         <CalendarDays className="size-3" />

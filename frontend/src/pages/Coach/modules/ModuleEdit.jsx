@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import {
   Card,
   CardHeader,
@@ -25,12 +26,8 @@ const ModuleEdit = () => {
   useEffect(() => {
     async function fetchData() {
       const [modulRes, lessonsRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/module/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${import.meta.env.VITE_API_URL}/lesson`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        apiFetch(`/module/${id}`, token),
+        apiFetch("/lesson", token),
       ]);
 
       const modulData = await modulRes.json();
@@ -62,12 +59,8 @@ const ModuleEdit = () => {
     e.preventDefault();
     setError(null);
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/module/${id}`, {
+    const response = await apiFetch(`/module/${id}`, token, {
       method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({
         ...formData,
         lessons: selectedLessons,

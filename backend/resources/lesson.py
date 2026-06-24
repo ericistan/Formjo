@@ -7,7 +7,7 @@ lesson = Blueprint('lesson', __name__)
 
 
 @lesson.route('/lesson', methods=['POST'])
-@jwt_required()  # This decorator blocks the request if no valid JWT is in the Authorization header
+@jwt_required()
 def create_lesson():
     data = request.get_json()
     # get_jwt_identity() reads the user's ID out of the JWT — we stored it there at signin
@@ -27,7 +27,8 @@ def create_lesson():
         release_connection(conn)
         return jsonify(status='error', msg='invalid category or difficulty'), 400
 
-    # RETURNING id gives us the new row's ID immediately — used to insert steps next
+    # %s used to prevent SQL injection as it returns as a string
+    # `RETURNING` clause hands back the generated ID of the row you just inserted in the same query.
     cursor.execute(
         '''INSERT INTO lesson (created_by, category_id, difficulty_id, title, description, media_type, media_url)
            VALUES (%s, %s, %s, %s, %s, %s, %s) RETURNING id''',
@@ -37,7 +38,7 @@ def create_lesson():
 
     new_id = cursor.fetchone()['id']
 
-    # Insert steps if provided, skipping any blanks
+    # Insert steps if provided
     steps = data.get('steps', [])
     for i, step in enumerate(steps):
         instruction = step.get('instruction', '').strip()

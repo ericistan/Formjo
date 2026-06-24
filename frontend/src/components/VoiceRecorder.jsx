@@ -41,6 +41,9 @@ const VoiceRecorder = ({ onAudioReady }) => {
     setState("idle");
   }
 
+  // Start recording audio using the MediaRecorder API.
+  //getUserMedia asks the browser for microphone access and returns a live stream.
+  //MediaRecorer creates a blob of audio data from the stream.
   async function startRecording() {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     const recorder = new MediaRecorder(stream);
@@ -92,12 +95,16 @@ const VoiceRecorder = ({ onAudioReady }) => {
       </button>
 
       {/* Consent dialog — renders as a modal overlay, stays out of the flex row */}
-      <AlertDialog open={state === "confirming"} onOpenChange={(open) => !open && handleDecline()}>
+      <AlertDialog
+        open={state === "confirming"}
+        onOpenChange={(open) => !open && handleDecline()}
+      >
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Before you record</AlertDialogTitle>
             <AlertDialogDescription>
-              Voice comments are uploaded to our media server. Don't include sensitive personal information in your recording.
+              Voice comments are uploaded to our media server. Don't include
+              sensitive personal information in your recording.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="flex items-center gap-2 px-1">
@@ -108,13 +115,20 @@ const VoiceRecorder = ({ onAudioReady }) => {
               onChange={(e) => setDontShowAgain(e.target.checked)}
               className="h-4 w-4 accent-primary cursor-pointer"
             />
-            <label htmlFor={checkboxId} className="text-sm text-muted-foreground cursor-pointer select-none">
+            <label
+              htmlFor={checkboxId}
+              className="text-sm text-muted-foreground cursor-pointer select-none"
+            >
               Don't show this again
             </label>
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={handleDecline}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleConsent}>Got it, record</AlertDialogAction>
+            <AlertDialogCancel onClick={handleDecline}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction onClick={handleConsent}>
+              Got it, record
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

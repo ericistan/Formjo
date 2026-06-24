@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../../../utils/api";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 
@@ -21,9 +22,7 @@ const ModuleList = () => {
 
   useEffect(() => {
     async function fetchModules() {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/module`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiFetch("/module", token);
       if (!response.ok) return;
       setModules(await response.json());
     }

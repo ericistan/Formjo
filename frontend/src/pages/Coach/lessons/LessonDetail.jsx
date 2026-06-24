@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { useState, useEffect } from "react";
+import { apiFetch } from "../../../utils/api";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import {
@@ -14,13 +15,7 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-
-function extractYouTubeId(url) {
-  const match = url.match(
-    /(?:youtube\.com\/(?:watch\?v=|embed\/|shorts\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/,
-  );
-  return match ? match[1] : null;
-}
+import { extractYouTubeId } from "../../../utils/youtube";
 
 const LessonDetail = () => {
   const { id } = useParams();
@@ -30,14 +25,7 @@ const LessonDetail = () => {
 
   useEffect(() => {
     async function fetchLesson() {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/lesson/${id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      const response = await apiFetch(`/lesson/${id}`, token);
       const data = await response.json();
       if (response.ok) setLesson(data);
     }
@@ -51,15 +39,7 @@ const LessonDetail = () => {
   }
 
   async function handleDelete() {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/lesson/${id}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
+    const response = await apiFetch(`/lesson/${id}`, token, { method: "DELETE" });
     if (response.ok) {
       navigate("/coach/lessons");
     } else {

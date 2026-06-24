@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft } from "lucide-react";
 import {
@@ -14,16 +15,8 @@ import {
   AlertDialogAction,
   AlertDialogCancel,
 } from "@/components/ui/alert-dialog";
-
-const GRADIENTS = [
-  "from-slate-700 to-slate-900",
-  "from-amber-700 to-orange-900",
-  "from-indigo-700 to-violet-900",
-  "from-teal-700 to-emerald-900",
-  "from-rose-700 to-red-900",
-  "from-stone-600 to-zinc-800",
-];
-const coverGradient = (id) => GRADIENTS[id % GRADIENTS.length];
+import { coverGradient } from "../../../utils/gradients";
+import StatusBadge from "../../../components/StatusBadge";
 
 const AssignmentDetail = () => {
   // :id from the URL — e.g. /coach/assignments/7 → id = "7"
@@ -34,10 +27,7 @@ const AssignmentDetail = () => {
 
   // fetchData is defined outside useEffect so handleDelete can call it to refresh after changes
   async function fetchData() {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/assignment/${id}`,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
+    const response = await apiFetch(`/assignment/${id}`, token);
     if (response.ok) setAssignment(await response.json());
   }
 
@@ -46,10 +36,7 @@ const AssignmentDetail = () => {
   }, [id]);
 
   async function handleDelete() {
-    const response = await fetch(
-      `${import.meta.env.VITE_API_URL}/assignment/${id}`,
-      { method: "DELETE", headers: { Authorization: `Bearer ${token}` } },
-    );
+    const response = await apiFetch(`/assignment/${id}`, token, { method: "DELETE" });
     // On success, navigate back — no need to update state since the record no longer exists
     if (response.ok) navigate("/coach/assignments");
   }
@@ -111,17 +98,7 @@ const AssignmentDetail = () => {
               · Due {new Date(assignment.due_date).toLocaleDateString()}
             </span>
           )}
-          <span
-            className={`ml-auto text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ${
-              assignment.status === "completed"
-                ? "bg-green-500/30 text-green-200"
-                : "bg-yellow-500/20 text-yellow-200"
-            }`}
-          >
-            {assignment.status === "completed"
-              ? "✓ Completed"
-              : "◷ In Progress"}
-          </span>
+          <StatusBadge status={assignment.status} variant="hero" className="ml-auto" />
         </div>
       </div>
 

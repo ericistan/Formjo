@@ -6,6 +6,8 @@ import { ChevronRight } from "lucide-react";
 import FormjoStyleGuide from "@/assets/formjo-styleguide.jpg";
 import FormjoDbErd from "@/assets/formjo-db-erd.png";
 import FormjoLofiWireframes from "@/assets/formjo-lofi-wireframe.jpg";
+import FeatureFrontend from "@/assets/landingpage-feature_frontend.png";
+import FeatureBackend from "@/assets/landingpage-feature_backend.png";
 
 const PHASES = [
   {
@@ -28,10 +30,8 @@ const PHASES = [
     description:
       "Built the full CRUD workflow for coaches and students. Lessons, modules, assignments, video submissions with YouTube and file upload support, and voice feedback recorded directly in the browser via the Web Audio API.",
     images: [
-      {
-        src: FormjoDbErd,
-        alt: "Core features — lesson builder and submission flow",
-      },
+      { src: FeatureFrontend, alt: "Frontend — coach and student dashboards" },
+      { src: FeatureBackend, alt: "Backend — Flask REST API and database schema" },
     ],
     techStack: [
       {
@@ -108,7 +108,7 @@ const PHASES = [
             },
             {
               emoji: "⚠️",
-              text: "Using a function to create CRUD endpoints would have been more efficient than writing each one manually.",
+              text: "Making use of props and code refactors so I don't spend time rewriting the same logic multiple times.",
             },
             {
               emoji: "⚠️",
@@ -117,7 +117,7 @@ const PHASES = [
           ].map(({ emoji, text }) => (
             <div
               key={text}
-              className="flex items-start gap-2 text-sm text-muted-foreground"
+              className="flex items-start gap-2 text-base text-muted-foreground"
             >
               <span>{emoji}</span>
               <span>{text}</span>
@@ -171,7 +171,7 @@ const PHASES = [
           ].map(({ emoji, text }) => (
             <div
               key={text}
-              className="flex items-start gap-2 text-sm text-muted-foreground"
+              className="flex items-start gap-2 text-base text-muted-foreground"
             >
               <span>{emoji}</span>
               <span>{text}</span>

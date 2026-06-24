@@ -1,18 +1,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { apiFetch } from "../../../utils/api";
 import { Button } from "@/components/ui/button";
 import { ChevronLeft, CalendarDays } from "lucide-react";
-
-const GRADIENTS = [
-  "from-slate-700 to-slate-900",
-  "from-amber-700 to-orange-900",
-  "from-indigo-700 to-violet-900",
-  "from-teal-700 to-emerald-900",
-  "from-rose-700 to-red-900",
-  "from-stone-600 to-zinc-800",
-];
-const coverGradient = (id) => GRADIENTS[id % GRADIENTS.length];
+import { coverGradient } from "../../../utils/gradients";
+import StatusBadge from "../../../components/StatusBadge";
 
 const AssignmentList = () => {
   const { token } = useAuth();
@@ -21,9 +14,7 @@ const AssignmentList = () => {
 
   useEffect(() => {
     async function fetchAssignments() {
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/assignment`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiFetch("/assignment", token);
       if (!response.ok) return;
       setAssignments(await response.json());
     }
@@ -83,15 +74,7 @@ const AssignmentList = () => {
                     </div>
                     <div className="flex flex-col gap-2 p-4">
                       <div className="flex items-center justify-between gap-2">
-                        <span
-                          className={`text-xs font-medium px-2 py-1 rounded flex items-center gap-1 ${
-                            a.status === "completed"
-                              ? "bg-green-500/20 text-green-600"
-                              : "bg-yellow-500/10 text-yellow-600"
-                          }`}
-                        >
-                          {a.status === "completed" ? "✓ Completed" : "◷ In Progress"}
-                        </span>
+                        <StatusBadge status={a.status} />
                         {a.due_date && (
                           <span className="flex items-center gap-1 text-xs text-muted-foreground">
                             <CalendarDays className="size-3" />

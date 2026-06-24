@@ -5,6 +5,7 @@ import { GoArrowUpRight } from "react-icons/go";
 
 const CardNav = ({
   logoText = "Formjo",
+  logoSrc,
   logoHref = "/",
   items = [],
   className = "",
@@ -133,7 +134,9 @@ const CardNav = ({
                 className="font-display text-xl"
                 style={{ color: menuColor }}
               >
-                {logoText}
+                {logoSrc
+                  ? <img src={logoSrc} alt="Formjo" className="h-7 w-auto" />
+                  : logoText}
               </Link>
               <div className="hidden md:flex items-center gap-1 ml-6">
                 {items.map((item) => {

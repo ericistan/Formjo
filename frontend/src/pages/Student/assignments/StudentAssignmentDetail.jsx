@@ -1,8 +1,10 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ChevronLeft } from "lucide-react";
+import StatusBadge from "../../../components/StatusBadge";
 
 const StudentAssignmentDetail = () => {
   // useParams reads :id from the URL — e.g. /student/assignments/5 → id = "5"
@@ -15,10 +17,7 @@ const StudentAssignmentDetail = () => {
   // Re-fetch if id changes (e.g. the user navigates between assignments)
   useEffect(() => {
     async function fetchAssignment() {
-      const response = await fetch(
-        `${import.meta.env.VITE_API_URL}/student/assignments/${id}`,
-        { headers: { Authorization: `Bearer ${token}` } },
-      );
+      const response = await apiFetch(`/student/assignments/${id}`, token);
       const data = await response.json();
       if (response.ok) setAssignment(data);
     }
@@ -47,16 +46,7 @@ const StudentAssignmentDetail = () => {
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3">
           <h1 className="font-display text-4xl">{assignment.module_title}</h1>
-          {/* Status badge — color changes based on allComplete boolean */}
-          <span
-            className={`text-xs font-medium px-2 py-0.5 rounded-full shrink-0 ${
-              allComplete
-                ? "bg-green-500/20 text-green-600"
-                : "bg-yellow-500/20 text-yellow-600"
-            }`}
-          >
-            {allComplete ? "Completed" : "In Progress"}
-          </span>
+          <StatusBadge status={allComplete ? "completed" : "pending"} variant="pill" />
         </div>
         <p className="text-sm text-muted-foreground">
           From {assignment.coach_name}

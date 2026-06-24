@@ -13,7 +13,6 @@ export function AuthProvider({ children }) {
   );
   const [token, setToken] = useState(localStorage.getItem("token") || null);
 
-  // Coaches get the dark theme, students get the light theme
   // Tailwind's dark mode works by checking if <html> has the "dark" class
   function applyRoleTheme(role) {
     if (role === "coach") {

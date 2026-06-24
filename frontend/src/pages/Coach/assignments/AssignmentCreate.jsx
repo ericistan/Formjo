@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
+import { apiFetch } from "../../../utils/api";
 import {
   Card,
   CardHeader,
@@ -30,12 +31,8 @@ const AssignmentCreate = () => {
       // this does two parallel fetches — students and modules — and waits for both to complete before continuing because the form needs both sets of data at the same time
       //promise.all is used to run both fetches in parallel, which is more efficient than running them sequentially
       const [studentsRes, modulesRes] = await Promise.all([
-        fetch(`${import.meta.env.VITE_API_URL}/students`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
-        fetch(`${import.meta.env.VITE_API_URL}/module`, {
-          headers: { Authorization: `Bearer ${token}` },
-        }),
+        apiFetch("/students", token),
+        apiFetch("/module", token),
       ]);
       if (studentsRes.ok) setStudents(await studentsRes.json());
       if (modulesRes.ok) setModules(await modulesRes.json());
@@ -51,12 +48,8 @@ const AssignmentCreate = () => {
     event.preventDefault();
     setError(null);
 
-    const response = await fetch(`${import.meta.env.VITE_API_URL}/assignment`, {
+    const response = await apiFetch("/assignment", token, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
       body: JSON.stringify({
         student_id: Number(formData.student_id),
         module_id: Number(formData.module_id),
