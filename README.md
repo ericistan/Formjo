@@ -1,10 +1,9 @@
+<img src="/frontend/src/assets/formjo-hero-github.png" />
+
 # Formjo
 
-<img src="/frontend/src/assets/feature-best-practice.png" width="300" />
-<img src="/frontend/src/assets/landingPage-feature_lesson.png" width="300" />
-<img src="/frontend/src/assets/landingPage-feature_record-audio.png" width="300" />
-
-A coaching platform that connects coaches and students through structured lesson plans, video submissions, and voice feedback. Built for sports where technique is everything.
+**Coach Smarter. Train Better.**
+Formjo is a platform for coaches to assign structured training, review athlete video submissions, and deliver personalised feedback.
 
 ---
 
@@ -41,20 +40,21 @@ A coaching platform that connects coaches and students through structured lesson
 
 ### Coach Dashboard
 
-<img src="/frontend/src/assets/feature-best-practice.png" width="300" />
+<img src="/frontend/src/assets/landingPage-feature_stat-tracking.png" width="300" />
 
 - Overview of all assigned modules and student progress
 - Create, edit, and delete lessons with structured steps, YouTube embeds, or file upload
 - Organise lessons into modules and assign them to students with an optional due date
 - Leave text or voice feedback on each student submission
 
-### Student Dashboard
+### Student App
 
 <img src="/frontend/src/assets/landingPage-feature_submitTraining.png" width="300" />
 
-- View all assigned modules with progress tracking per lesson
-- Submit training videos via YouTube link
-- Reply to coach feedback with text or voice recorded directly in the browser
+- View all assigned modules and lessons with simple to follow steps created by your coach
+- Submit training videos for your coach to review via Video upload orYouTube link
+- Get feedback from your coach with text or voice recordings.
+- Track your progress as your coach reviews what you did and mark lessons as complete
 
 ### Voice Feedback
 
