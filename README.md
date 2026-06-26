@@ -11,28 +11,33 @@ Formjo is a platform for coaches to assign structured training, review athlete v
 
 **Frontend**
 
-- **React** for UI components and state management
-- **Vite** for fast build tooling and hot module replacement
-- **Tailwind CSS** for utility-first styling and dual-mode theming
-- **shadcn/ui** for accessible, composable UI primitives
-- **Framer Motion** for scroll-driven animations
-- **GSAP** for hamburger menu and card transition animations
-- **React Router** for client-side routing and protected routes
+|                                                                                                                         | Description                                   |
+| ----------------------------------------------------------------------------------------------------------------------- | --------------------------------------------- |
+| ![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)                     | UI components and state management            |
+| ![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)                         | Fast build tooling and hot module replacement |
+| ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)  | Utility-first styling and dual-mode theming   |
+| ![shadcn/ui](https://img.shields.io/badge/shadcn%2Fui-000000?style=for-the-badge&logo=shadcnui&logoColor=white)         | Accessible, composable UI primitives          |
+| ![Framer Motion](https://img.shields.io/badge/Framer_Motion-black?style=for-the-badge&logo=framer&logoColor=white)      | Scroll-driven animations                      |
+| ![GSAP](https://img.shields.io/badge/GSAP-88CE02?style=for-the-badge&logo=greensock&logoColor=black)                    | Hamburger menu and card transition animations |
+| ![React Router](https://img.shields.io/badge/React_Router-CA4245?style=for-the-badge&logo=react-router&logoColor=white) | Client-side routing and protected routes      |
 
 **Backend**
 
-- **Python + Flask** for the REST API
-- **PostgreSQL** for the relational database (13 tables)
-- **psycopg2** for raw SQL queries with parameterised inputs
-- **PyJWT** for JSON Web Token authentication (7-day expiry)
-- **bcrypt** for password hashing
-- **Cloudinary** for voice feedback audio storage
+|                                                                                                                   | Description                                      |
+| ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------ |
+| ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)             | REST API with Flask                              |
+| ![Flask](https://img.shields.io/badge/Flask-000000?style=for-the-badge&logo=flask&logoColor=white)                | Lightweight web framework with blueprint routing |
+| ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white) | Relational database with 13 tables               |
+| ![JWT](https://img.shields.io/badge/JWT-000000?style=for-the-badge&logo=jsonwebtokens&logoColor=white)            | JSON Web Token authentication                    |
+| ![Cloudinary](https://img.shields.io/badge/Cloudinary-3448C5?style=for-the-badge&logo=cloudinary&logoColor=white) | Voice feedback audio storage                     |
 
 **Tools**
 
-- **Figma** for UI design, wireframing, and style guide
-- **Bruno** for API testing and endpoint documentation
-- **Claude** for AI-assisted development and code review
+|                                                                                                          | Description                             |
+| -------------------------------------------------------------------------------------------------------- | --------------------------------------- |
+| ![Figma](https://img.shields.io/badge/Figma-F24E1E?style=for-the-badge&logo=figma&logoColor=white)       | UI design, wireframing, and style guide |
+| ![Bruno](https://img.shields.io/badge/Bruno-FF6C37?style=for-the-badge&logo=bruno&logoColor=white)       | API testing and endpoint documentation  |
+| ![Claude](https://img.shields.io/badge/Claude-D4A574?style=for-the-badge&logo=anthropic&logoColor=black) | AI-assisted development and code review |
 
 ---
 
@@ -205,10 +210,10 @@ Features left on the roadmap for a production-ready coaching platform.
 
 ## Future Enhancements
 
-- Push notifications when coaches leave voice or text feedback
-- Coach-student invite system with roster management
-- Direct video file uploads beyond YouTube-only submissions
-- Password reset via email
-- Analytics dashboard for coaches to track student progress over time
-- Improve validator checks for submission URLs and file types
-- Improve protected route handling to prevent unauthorized access to other users' data
+- 🔔 Push notifications when coaches leave voice or text feedback
+- 👥 Coach-student invite system with roster management
+- 📹 Direct video file uploads beyond YouTube-only submissions
+- 🔑 Password reset via email
+- 📊 Analytics dashboard for coaches to track student progress over time
+- 🛡️ Improve validator checks for submission URLs and file types
+- 🔒 Improve protected route handling to prevent unauthorized access to other users' data
