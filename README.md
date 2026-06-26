@@ -1,6 +1,10 @@
 # Formjo
 
-A coaching platform that connects coaches and athletes through structured lesson plans, video submissions, and voice feedback. Built for sports where technique is everything.
+<img src="/frontend/src/assets/feature-best-practice.png" width="300" />
+<img src="/frontend/src/assets/landingPage-feature_lesson.png" width="300" />
+<img src="/frontend/src/assets/landingPage-feature_record-audio.png" width="300" />
+
+A coaching platform that connects coaches and students through structured lesson plans, video submissions, and voice feedback. Built for sports where technique is everything.
 
 ---
 
@@ -25,19 +29,19 @@ A coaching platform that connects coaches and athletes through structured lesson
 - **bcrypt** for password hashing
 - **Cloudinary** for voice feedback audio storage
 
+**Tools**
+
+- **Figma** for UI design, wireframing, and style guide
+- **Bruno** for API testing and endpoint documentation
+- **Claude** for AI-assisted development and code review
+
 ---
 
 ## Core Features
 
-### Landing Page
-
-- Scroll-driven hero animation: image shrinks from full-screen to thumbnail using Framer Motion `useScroll` and `useTransform` across a 300vh sticky scroll zone
-- 3-column features section with sticky centre image that swaps based on per-element scroll visibility
-- Interactive SVG curved marquee (`CurvedLoop`) with drag-to-reverse and velocity tracking
-- Animated 4-phase project timeline with scroll-triggered dot colour transitions
-- Dual-mode theming in OKLCH color space — dark for coaches, light for students
-
 ### Coach Dashboard
+
+<img src="/frontend/src/assets/feature-best-practice.png" width="300" />
 
 - Overview of all assigned modules and student progress
 - Create, edit, and delete lessons with structured steps, YouTube embeds, or file upload
@@ -46,22 +50,20 @@ A coaching platform that connects coaches and athletes through structured lesson
 
 ### Student Dashboard
 
+<img src="/frontend/src/assets/landingPage-feature_submitTraining.png" width="300" />
+
 - View all assigned modules with progress tracking per lesson
 - Submit training videos via YouTube link
 - Reply to coach feedback with text or voice recorded directly in the browser
 
 ### Voice Feedback
 
+<img src="/frontend/src/assets/landingPage-feature_record-audio.png" width="300" />
+
 - Records audio directly in the browser using the Web Audio API and MediaRecorder
 - Preview before sending, discard and re-record at any time
 - Uploads to Cloudinary and attaches to the feedback thread
 - One-time consent gate persisted via localStorage
-
-### Lesson Submission Flow
-
-- Students submit a YouTube link per lesson inside an assignment
-- Each submission shows the embedded video, optional notes, and its full feedback thread
-- Multiple attempts supported — each tracked as a numbered attempt card
 
 ---
 
@@ -71,32 +73,43 @@ A coaching platform that connects coaches and athletes through structured lesson
 formjo/
 ├── backend/
 │   ├── db/
-│   │   └── db_pool.py          # psycopg2 connection pool
+│   │   └── db_pool.py              # psycopg2 connection pool
 │   ├── resources/
-│   │   ├── auth.py             # signup, signin, signout
-│   │   ├── lesson.py           # lesson CRUD with steps
-│   │   ├── module.py           # module CRUD
-│   │   ├── assignment.py       # assignment CRUD, coach + student views
-│   │   ├── submission.py       # submission CRUD
-│   │   └── comment.py          # text + voice comment CRUD
-│   └── main.py                 # Flask app, blueprint registration
+│   │   ├── auth.py                 # signup, signin, signout
+│   │   ├── lesson.py               # lesson CRUD with steps
+│   │   ├── module.py               # module CRUD
+│   │   ├── assignment.py           # assignment CRUD, coach + student views
+│   │   ├── submission.py           # submission CRUD
+│   │   └── comment.py              # text + voice comment CRUD
+│   └── main.py                     # Flask app, blueprint registration
 └── frontend/
     └── src/
         ├── assets/
         ├── components/
-        │   ├── landing/        # HeroSection, FeaturesSection, TimelineSection, TeamSection, FooterSection, CurvedLoop
+        │   ├── landing/            # HeroSection, FeaturesSection, TimelineSection, TeamSection, FooterSection, CurvedLoop
+        │   ├── ui/                 # shadcn primitives (Button, Input, Card, Label, AlertDialog)
+        │   ├── StatusBadge.jsx     # shared status badge (card, pill, row, hero variants)
+        │   ├── SubmissionCard.jsx  # shared submission card (coach + student via viewerRole prop)
         │   ├── VoiceRecorder.jsx
         │   ├── Navbar.jsx
-        │   └── CardNav.jsx     # GSAP animated mobile nav
+        │   ├── CardNav.jsx         # GSAP animated mobile nav
+        │   ├── Layout.jsx
+        │   └── ProtectedRoute.jsx
         ├── context/
-        │   └── AuthContext.jsx # JWT auth + dual-mode theme toggle
+        │   └── AuthContext.jsx     # JWT auth + dual-mode theme toggle
+        ├── utils/
+        │   ├── api.js              # apiFetch wrapper (base URL + auth header)
+        │   ├── gradients.js        # deterministic cover gradient util
+        │   └── youtube.js          # YouTube URL → embed ID regex
         └── pages/
             ├── Coach/
-            │   ├── lessons/    # LessonList, LessonDetail, LessonCreate, LessonEdit
-            │   ├── modules/    # ModuleList, ModuleDetail, ModuleCreate, ModuleEdit
-            │   └── assignments/
+            │   ├── lessons/        # LessonList, LessonDetail, LessonCreate, LessonEdit
+            │   ├── modules/        # ModuleList, ModuleDetail, ModuleCreate, ModuleEdit
+            │   └── assignments/    # AssignmentList, AssignmentDetail, AssignmentCreate, CoachAssignmentLesson
             └── Student/
-                └── assignments/
+                ├── assignments/    # StudentAssignmentList, StudentAssignmentDetail, StudentLessonDetail
+                ├── StudentDashboard.jsx
+                └── CoachDashboard.jsx
 ```
 
 ---
@@ -118,10 +131,10 @@ cd formjo
 
 ### 2. Set up the database
 
-Create a PostgreSQL database, then run the schema:
+Create a PostgreSQL database, then run the schema and seed data:
 
 ```bash
-psql -d your_database_name -f schema.sql
+psql -d your_database_name -f backend/db/schema.sql
 ```
 
 ### 3. Backend
@@ -163,30 +176,30 @@ npm run dev
 
 ### Demo Accounts
 
-| Role    | Email            | Password    |
-| ------- | ---------------- | ----------- |
-| Coach   | coach@demo.com   | password123 |
-| Student | student@demo.com | password123 |
+| Role    | Email              | Password    |
+| ------- | ------------------ | ----------- |
+| Coach   | coach@formjo.com   | password123 |
+| Student | student@formjo.com | password123 |
 
 ---
 
 ## Development Process
 
-### Phase 1 — Foundations
+### Phase 1 - Foundations
 
-Designed the full data model: 13 database tables covering users, lessons, modules, assignments, submissions, and feedback. Built the Flask REST API with JWT authentication, psycopg2 connection pooling, and bcrypt password hashing.
+Started with the data model - 13 database tables covering users, lessons, modules, assignments, submissions, and feedback. Built a secure Flask REST API with JWT authentication from the ground up.
 
-### Phase 2 — Core Features
+### Phase 2 - Core Features
 
-Built the full CRUD workflow for both roles. Lessons with structured steps, modules, assignments with due dates, YouTube video submissions, and a voice feedback system using the Web Audio API with Cloudinary upload.
+Built the full CRUD workflow for coaches and students. Lessons, modules, assignments, video submissions with YouTube and file upload support, and voice feedback recorded directly in the browser via the Web Audio API.
 
-### Phase 3 — The Experience
+### Phase 3 - The Experience
 
-Built the dual-mode UI (dark for coaches, light for students) and the animated landing page: scroll-driven hero, sticky image swap features section, GSAP hamburger nav, and the CurvedLoop interactive SVG marquee.
+Shipped a dual-mode app for Coaches and Students with a seeded demo dataset that walks through a full coaching cycle: lessons assigned, videos submitted, and feedback recorded via comments and voice. Live and fully functional end to end.
 
-### Phase 4 — Stretch Goals
+### Phase 4 - Stretch Goals
 
-Push notifications, a formal coach-student invite and roster system, direct video file uploads, and an analytics dashboard for coaches.
+Features left on the roadmap for a production-ready coaching platform.
 
 ---
 
@@ -197,3 +210,5 @@ Push notifications, a formal coach-student invite and roster system, direct vide
 - Direct video file uploads beyond YouTube-only submissions
 - Password reset via email
 - Analytics dashboard for coaches to track student progress over time
+- Improve validator checks for submission URLs and file types
+- Improve protected route handling to prevent unauthorized access to other users' data

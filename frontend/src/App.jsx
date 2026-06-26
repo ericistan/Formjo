@@ -24,47 +24,159 @@ import StudentLessonDetail from "./pages/Student/assignments/StudentLessonDetail
 function App() {
   return (
     <>
-      {/* Routes is a container — React Router looks through its children and renders
-          the first <Route> whose path matches the current URL */}
       <Routes>
-
-        {/* Public routes — accessible without being signed in */}
+        {/* Public routes*/}
         <Route path="/signup" element={<SignupPage />} />
         <Route path="/signin" element={<SigninPage />} />
         <Route path="/" element={<LandingPage />} />
 
-        {/* Protected routes — ProtectedRoute redirects to /signin if no token exists */}
+        {/* Protected routes*/}
 
         {/* Coach routes */}
-        <Route path="/coach/dashboard" element={<ProtectedRoute><CoachDashboard /></ProtectedRoute>} />
+        <Route
+          path="/coach/dashboard"
+          element={
+            <ProtectedRoute>
+              <CoachDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Lessons — full CRUD: list, create, read (detail), update (edit) */}
-        <Route path="/coach/lessons" element={<ProtectedRoute><LessonList /></ProtectedRoute>} />
-        <Route path="/coach/lessons/create" element={<ProtectedRoute><LessonCreate /></ProtectedRoute>} />
-        <Route path="/coach/lessons/:id" element={<ProtectedRoute><LessonDetail /></ProtectedRoute>} />
-        {/* :id is a dynamic segment — the actual lesson ID comes from the URL (e.g. /coach/lessons/3) */}
-        <Route path="/coach/lessons/:id/edit" element={<ProtectedRoute><LessonEdit /></ProtectedRoute>} />
+        <Route
+          path="/coach/lessons"
+          element={
+            <ProtectedRoute>
+              <LessonList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/lessons/create"
+          element={
+            <ProtectedRoute>
+              <LessonCreate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/lessons/:id"
+          element={
+            <ProtectedRoute>
+              <LessonDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/lessons/:id/edit"
+          element={
+            <ProtectedRoute>
+              <LessonEdit />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Modules — full CRUD */}
-        <Route path="/coach/modules" element={<ProtectedRoute><ModuleList /></ProtectedRoute>} />
-        <Route path="/coach/modules/create" element={<ProtectedRoute><ModuleCreate /></ProtectedRoute>} />
-        <Route path="/coach/modules/:id" element={<ProtectedRoute><ModuleDetail /></ProtectedRoute>} />
-        <Route path="/coach/modules/:id/edit" element={<ProtectedRoute><ModuleEdit /></ProtectedRoute>} />
+        <Route
+          path="/coach/modules"
+          element={
+            <ProtectedRoute>
+              <ModuleList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/modules/create"
+          element={
+            <ProtectedRoute>
+              <ModuleCreate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/modules/:id"
+          element={
+            <ProtectedRoute>
+              <ModuleDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/modules/:id/edit"
+          element={
+            <ProtectedRoute>
+              <ModuleEdit />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Assignments — coach assigns modules to students and tracks their progress */}
-        <Route path="/coach/assignments" element={<ProtectedRoute><AssignmentList /></ProtectedRoute>} />
-        <Route path="/coach/assignments/create" element={<ProtectedRoute><AssignmentCreate /></ProtectedRoute>} />
-        <Route path="/coach/assignments/:id" element={<ProtectedRoute><AssignmentDetail /></ProtectedRoute>} />
-        {/* Nested route — :id is the assignment, :lessonId is a specific lesson within it */}
-        <Route path="/coach/assignments/:id/lessons/:lessonId" element={<ProtectedRoute><CoachAssignmentLesson /></ProtectedRoute>} />
+        <Route
+          path="/coach/assignments"
+          element={
+            <ProtectedRoute>
+              <AssignmentList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/assignments/create"
+          element={
+            <ProtectedRoute>
+              <AssignmentCreate />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/assignments/:id"
+          element={
+            <ProtectedRoute>
+              <AssignmentDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/coach/assignments/:id/lessons/:lessonId"
+          element={
+            <ProtectedRoute>
+              <CoachAssignmentLesson />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Student routes */}
-        <Route path="/student/dashboard" element={<ProtectedRoute><StudentDashboard /></ProtectedRoute>} />
-        <Route path="/student/assignments" element={<ProtectedRoute><StudentAssignmentList /></ProtectedRoute>} />
-        <Route path="/student/assignments/:id" element={<ProtectedRoute><StudentAssignmentDetail /></ProtectedRoute>} />
-        {/* Students view a lesson within an assignment and submit their video here */}
-        <Route path="/student/assignments/:id/lessons/:lessonId" element={<ProtectedRoute><StudentLessonDetail /></ProtectedRoute>} />
-
+        <Route
+          path="/student/dashboard"
+          element={
+            <ProtectedRoute>
+              <StudentDashboard />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/assignments"
+          element={
+            <ProtectedRoute>
+              <StudentAssignmentList />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/assignments/:id"
+          element={
+            <ProtectedRoute>
+              <StudentAssignmentDetail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/student/assignments/:id/lessons/:lessonId"
+          element={
+            <ProtectedRoute>
+              <StudentLessonDetail />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

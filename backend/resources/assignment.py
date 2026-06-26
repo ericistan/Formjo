@@ -24,7 +24,7 @@ def create_assignment():
 
     cursor.execute(
         '''INSERT INTO assignments (module_id, student_id, coach_id, due_date)
-           VALUES (%s, %s, %s, %s) RETURNING id''',
+           VALUES (%s, %s, %s, %s) RETURNING id''', #returning id needs primary key from prev table.
         (data['module_id'], data['student_id'], coach_id, data.get('due_date'))
     )
     new_id = cursor.fetchone()['id']
@@ -176,7 +176,7 @@ def mark_lesson_complete(id, lesson_id):
         return jsonify(status='error', msg='assignment not found or unauthorized'), 404
 
     cursor.execute(
-        'INSERT INTO lesson_progress (assignment_id, lesson_id) VALUES (%s, %s) ON CONFLICT DO NOTHING',
+        'INSERT INTO lesson_progress (assignment_id, lesson_id) VALUES (%s, %s) ON CONFLICT DO NOTHING',#delete
         (id, lesson_id)
     )
 

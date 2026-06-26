@@ -3,7 +3,6 @@ from flask import request, jsonify, Blueprint
 from flask_jwt_extended import create_access_token, create_refresh_token, jwt_required, get_jwt_identity, get_jwt
 from db.db_pool import get_cursor, release_connection
 
-# Blueprint groups related routes — all auth routes (/auth/signup, /auth/signin, etc.) live here
 auth = Blueprint('auth', __name__)
 
 
@@ -15,7 +14,7 @@ def signup():
     conn, cursor = get_cursor()
 
     # Check if this email already exists before creating a duplicate account
-    # %s is a parameterized placeholder — psycopg2 escapes it to prevent SQL injection
+    # %s is a parameterized placeholder, psycopg2 escapes it to prevent SQL injection
     cursor.execute('SELECT id FROM users WHERE email=%s;', (data['email'],))
     results = cursor.fetchone()
 
@@ -24,18 +23,15 @@ def signup():
         # 400 = Bad Request — tell the client their input caused the problem
         return jsonify(status='error', msg='duplicate email'), 400
 
-    # Hash the password before storing — NEVER store plain-text passwords in the database
     # bcrypt.gensalt() generates a random "salt" added to the password before hashing
     # This means two identical passwords produce different hashes (prevents rainbow table attacks by precomputing hashes instead of computing them on the fly.)
     hashed = bcrypt.hashpw(data['password'].encode('utf-8'), bcrypt.gensalt())
 
-    # RETURNING lets us immediately get the newly created row without a second SELECT query
     cursor.execute(
         'INSERT INTO users (email, password_hash, role, name) VALUES (%s, %s, %s, %s) RETURNING id, email, role, name',
         (data['email'], hashed.decode('utf-8'), data['role'], data['name']))
 
     new_user = cursor.fetchone()
-    # conn.commit() saves the INSERT permanently, without this it would be rolled back
     conn.commit()
     release_connection(conn)
 
@@ -43,7 +39,6 @@ def signup():
     # additional_claims embeds name + role inside the token so we can read them without a DB query
     access_token = create_access_token(str(new_user['id']),
                                        additional_claims={'name': new_user['name'], 'role': new_user['role']})
-    # 201 = Created — the standard HTTP status for successfully creating a new resource
     return jsonify(access=access_token, user=new_user), 201
 
 
@@ -57,12 +52,9 @@ def signin():
     release_connection(conn)
 
     # Return the same vague error whether the email is wrong OR the password is wrong
-    # This is a security best practice — it prevents attackers from discovering valid emails
     if not results:
         return jsonify(status='error', msg='username or password is wrong'), 400
 
-    # bcrypt.checkpw re-hashes the submitted password with the stored salt and compares
-    # You never decrypt a bcrypt hash — you only ever compare
     valid = bcrypt.checkpw(data['password'].encode('utf-8'), results['password_hash'].encode('utf-8'))
 
     if not valid:

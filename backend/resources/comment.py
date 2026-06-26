@@ -20,7 +20,7 @@ def create_comment():
         release_connection(conn)
         return jsonify(status='error', msg='submission not found'), 404
 
-    # body and audio_url are mutually optional, a comment can be text, voice, or both
+    # body and audio_url are mutually optional,      a comment can be text, voice, or both
     body = data.get('body') or None
     audio_url = data.get('audio_url') or None
 
