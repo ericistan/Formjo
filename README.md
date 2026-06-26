@@ -203,16 +203,17 @@ Built the full CRUD workflow for coaches and students. Lessons, modules, assignm
 ### Phase 3 - The Experience
 
 **Outcomes & Lessons**
-✅ Full CRUD workflow for lessons, modules, assignments, submissions, and feedback
-✅ Use deterministic gradients for lesson cover images based on module ID to create a unique visual identity for each lesson
-✅ Voice feedback recorded directly in the browser using the Web Audio API and MediaRecorder, with Cloudinary for Video upload and a localStorage-persisted consent gate
-✅ Using regex to extract YouTube video IDs from any valid URL format for embedding
-✅ Back and forth commenting on student's submissions
-⚠️ Spend more time performing UX heuristic evaluations and user testing to catch usability issues
-⚠️ Reviewing the ERD and Database schema while building would save time and prevent mistakes in the API design when building features not initially planned.
-⚠️ Making use of props and code refactors so I don't spend time rewriting the same logic multiple times.
-⚠️ Using Tanstack Query for data fetching and caching would have simplified the frontend code and improved performance.
-⚠️ Be mindful of edge cases such as validator checks and protected route handling to prevent unauthorized access to other users' data.
+
+- ✅ Full CRUD workflow for lessons, modules, assignments, submissions, and feedback
+- ✅ Use deterministic gradients for lesson cover images based on module ID to create a unique visual identity for each lesson
+- ✅ Voice feedback recorded directly in the browser using the Web Audio API and MediaRecorder, with Cloudinary for Video upload and a localStorage-persisted consent gate
+- ✅ Using regex to extract YouTube video IDs from any valid URL format for embedding
+- ✅ Back and forth commenting on student's submissions
+- ⚠️ Spend more time performing UX heuristic evaluations and user testing to catch usability issues
+- ⚠️ Reviewing the ERD and Database schema while building would save time and prevent mistakes in the API design when building features not initially planned.
+- ⚠️ Making use of props and code refactors so I don't spend time rewriting the same logic multiple times.
+- ⚠️ Using Tanstack Query for data fetching and caching would have simplified the frontend code and improved performance.
+- ⚠️ Be mindful of edge cases such as validator checks and protected route handling to prevent unauthorized access to other users' data.
 
 ---
 
