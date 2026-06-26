@@ -45,8 +45,6 @@ Formjo is a platform for coaches to assign structured training, review athlete v
 
 ### Coach Dashboard
 
-<img src="/frontend/src/assets/landingPage-feature_stat-tracking.png" width="300" />
-
 - Overview of all assigned modules and student progress
 - Create, edit, and delete lessons with structured steps, YouTube embeds, or file upload
 - Organise lessons into modules and assign them to students with an optional due date
@@ -54,16 +52,12 @@ Formjo is a platform for coaches to assign structured training, review athlete v
 
 ### Student App
 
-<img src="/frontend/src/assets/landingPage-feature_submitTraining.png" width="300" />
-
 - View all assigned modules and lessons with simple to follow steps created by your coach
 - Submit training videos for your coach to review via Video upload orYouTube link
 - Get feedback from your coach with text or voice recordings.
 - Track your progress as your coach reviews what you did and mark lessons as complete
 
 ### Voice Feedback
-
-<img src="/frontend/src/assets/landingPage-feature_record-audio.png" width="300" />
 
 - Records audio directly in the browser using the Web Audio API and MediaRecorder
 - Preview before sending, discard and re-record at any time
@@ -194,17 +188,31 @@ npm run dev
 
 Started with the data model - 13 database tables covering users, lessons, modules, assignments, submissions, and feedback. Built a secure Flask REST API with JWT authentication from the ground up.
 
+Researched style and theming options for a dual-mode app (Coach vs Student) and implemented a responsive landing page with TailwindCSS, shadcn/ui, and Framer Motion.
+
+<img src="/frontend/src/assets/formjo-lofi-wireframe.jpg" />
+<img src="/frontend/src/assets/formjo-styleguide.jpg" />
+
 ### Phase 2 - Core Features
 
 Built the full CRUD workflow for coaches and students. Lessons, modules, assignments, video submissions with YouTube and file upload support, and voice feedback recorded directly in the browser via the Web Audio API.
 
+<img src="/frontend/src/assets/formjo-coach-app.jpg" width="800" />
+<img src="/frontend/src/assets/formjo-student-app.jpg" width="800" />
+
 ### Phase 3 - The Experience
 
-Shipped a dual-mode app for Coaches and Students with a seeded demo dataset that walks through a full coaching cycle: lessons assigned, videos submitted, and feedback recorded via comments and voice. Live and fully functional end to end.
-
-### Phase 4 - Stretch Goals
-
-Features left on the roadmap for a production-ready coaching platform.
+**Outcomes & Lessons**
+✅ Full CRUD workflow for lessons, modules, assignments, submissions, and feedback
+✅ Use deterministic gradients for lesson cover images based on module ID to create a unique visual identity for each lesson
+✅ Voice feedback recorded directly in the browser using the Web Audio API and MediaRecorder, with Cloudinary for Video upload and a localStorage-persisted consent gate
+✅ Using regex to extract YouTube video IDs from any valid URL format for embedding
+✅ Back and forth commenting on student's submissions
+⚠️ Spend more time performing UX heuristic evaluations and user testing to catch usability issues
+⚠️ Reviewing the ERD and Database schema while building would save time and prevent mistakes in the API design when building features not initially planned.
+⚠️ Making use of props and code refactors so I don't spend time rewriting the same logic multiple times.
+⚠️ Using Tanstack Query for data fetching and caching would have simplified the frontend code and improved performance.
+⚠️ Be mindful of edge cases such as validator checks and protected route handling to prevent unauthorized access to other users' data.
 
 ---
 
@@ -215,5 +223,3 @@ Features left on the roadmap for a production-ready coaching platform.
 - 📹 Direct video file uploads beyond YouTube-only submissions
 - 🔑 Password reset via email
 - 📊 Analytics dashboard for coaches to track student progress over time
-- 🛡️ Improve validator checks for submission URLs and file types
-- 🔒 Improve protected route handling to prevent unauthorized access to other users' data
