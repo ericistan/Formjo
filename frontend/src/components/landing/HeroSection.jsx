@@ -34,7 +34,7 @@ const HeroSection = () => {
           >
             <img
               src={heroImg}
-              alt="Boxer hitting coach's pad — Formjo training session"
+              alt="Boxer hitting coach's pad, Formjo training session"
               className="size-full object-cover"
             />
           </motion.div>

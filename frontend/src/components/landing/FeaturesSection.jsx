@@ -138,7 +138,7 @@ const FeaturesSection = () => {
 
   return (
     <section className="relative px-[5%] py-16 md:py-24 lg:py-28">
-      <div className="container">
+      <div className="container mx-auto">
         {/* Section header */}
         <div className="mx-auto max-w-lg text-center">
           <p className="mb-3 font-semibold text-primary md:mb-4">
@@ -148,8 +148,8 @@ const FeaturesSection = () => {
             Everything you need to coach better
           </h2>
           <p className="text-muted-foreground md:text-base">
-            Formjo brings structure, video, and feedback into a single workflow
-            — so coaches can focus on coaching, not admin.
+            Formjo brings structure, video, and feedback into a single
+            workflow, so coaches can focus on coaching, not admin.
           </p>
         </div>
 
@@ -200,9 +200,9 @@ const FeaturesSection = () => {
 
       {/* CTA */}
       <div className="px-[5%] py-16 md:py-24 lg:py-28">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="mx-auto max-w-lg text-center">
-            <p className="mb-3 font-semibold text-primary md:mb-4">GA Capstone — 2026</p>
+            <p className="mb-3 font-semibold text-primary md:mb-4">GA Capstone, 2026</p>
             <h2 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
               Ready to see it in action?
             </h2>

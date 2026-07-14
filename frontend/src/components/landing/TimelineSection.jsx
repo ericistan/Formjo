@@ -14,7 +14,7 @@ const PHASES = [
     date: "Phase 1",
     label: "Foundations",
     description:
-      "Started with the data model — 13 database tables covering users, lessons, modules, assignments, submissions, and feedback. Built a secure Flask REST API with JWT authentication from the ground up.",
+      "Started with the data model: 13 database tables covering users, lessons, modules, assignments, submissions, and feedback. Built a secure Flask REST API with JWT authentication from the ground up.",
     images: [
       { src: FormjoDbErd, alt: "Database Schema ERD and API scaffolding" },
       {
@@ -30,8 +30,8 @@ const PHASES = [
     description:
       "Built the full CRUD workflow for coaches and students. Lessons, modules, assignments, video submissions with YouTube and file upload support, and voice feedback recorded directly in the browser via the Web Audio API.",
     images: [
-      { src: FeatureFrontend, alt: "Frontend — coach and student dashboards" },
-      { src: FeatureBackend, alt: "Backend — Flask REST API and database schema" },
+      { src: FeatureFrontend, alt: "Frontend, coach and student dashboards" },
+      { src: FeatureBackend, alt: "Backend, Flask REST API and database schema" },
     ],
     techStack: [
       {
@@ -146,7 +146,7 @@ const PHASES = [
           {[
             {
               emoji: "🔔",
-              text: "Push notifications — alert students when a coach leaves voice or text feedback",
+              text: "Push notifications: alert students when a coach leaves voice or text feedback",
             },
             {
               emoji: "👥",
@@ -281,12 +281,12 @@ const TimelineItem = ({
 
 const SectionHeader = ({ isBottom }) => (
   <div className="bg-background px-[5%] py-16 md:py-24 lg:py-28">
-    <div className="container">
+    <div className="container mx-auto">
       <div className="mx-auto max-w-lg text-center">
         {isBottom ? (
           <>
             <p className="mb-3 font-semibold text-primary md:mb-4">
-              GA Capstone — 2026
+              GA Capstone, 2026
             </p>
             <h2 className="mb-5 text-5xl font-bold md:mb-6 md:text-7xl lg:text-8xl">
               Ready to see it in action?
@@ -335,7 +335,7 @@ const TimelineSection = () => (
       <SectionHeader isBottom={false} />
 
       <div className="px-[5%]">
-        <div className="container">
+        <div className="container mx-auto">
           <div className="relative flex flex-col items-center justify-center">
             {/* Vertical line */}
             <div className="absolute left-1.5 -z-20 h-full w-[3px] bg-border md:left-auto">
@@ -343,7 +343,7 @@ const TimelineSection = () => (
               <div className="absolute bottom-0 left-0 right-0 z-10 h-24 w-full bg-gradient-to-t from-background to-transparent" />
             </div>
 
-            {PHASES.map((phase, index) => (
+            {PHASES.map((phase) => (
               <TimelineItem key={phase.date} {...phase} />
             ))}
           </div>
